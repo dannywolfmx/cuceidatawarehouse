@@ -1,0 +1,6 @@
+{
+  "name": "interface-grafica",
+  "short_name": "interface-grafica",
+  "start_url": "/",
+  "display": "standalone"
+}
