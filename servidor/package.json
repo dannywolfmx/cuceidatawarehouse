@@ -1,0 +1,15 @@
+{
+  "name": "trata-de-paises",
+  "version": "0.0.1",
+  "description": "Actividad de dataware house",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.15.2",
+    "express-fileupload": "^0.1.2"
+  }
+}
