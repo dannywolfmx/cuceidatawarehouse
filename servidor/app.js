@@ -1,7 +1,7 @@
 const express = require('express'),
     app = express(),
-    fileUpload = require("express-fileupload");
-
+    fileUpload = require("express-fileupload"),
+    node_xj = require("xls-to-json");
 
 const PUERTO = 3000;
 
@@ -15,12 +15,22 @@ app.post('/upload',(req,res) =>{
 
     let archivo = req.files.sampleFile;
     let nombreArchivo = archivo.name
+    let tipo = archivo.mimetype
+    console.log()
     archivo.mv(nombreArchivo,(err)=>{
         if(err){
             return res.status(500).send(err)
         }
+
+        if("application/vnd.ms-excel" == tipo){
+            convertirXls(nombreArchivo)
+        }
+
         res.send("Files uploaded!");
     })
+
+
+
     
 })
 
@@ -36,3 +46,17 @@ app.listen( app.get('port') , () => {
     console.log("Express corriendo, para terminar preciona Ctrl-C")  ;
 });
 
+function convertirXls(input){
+var res = {};
+
+node_xj({  
+  input: "hd.xls", 
+  output: "bla.json"
+}, function(err, result) {
+  if(err) {
+    console.error(err);
+  } else {
+      console.log(result)
+  }
+});
+}
