@@ -1,9 +1,12 @@
 const express = require('express'),
     app = express(),
+    fs = require("fs"),
     fileUpload = require("express-fileupload"),
-    node_xj = require("xls-to-json");
+    node_xj = require("xls-to-json"),
+    PDFParser = require("pdf2json")
+    pdf2table = require("pdf2table");
 
-const PUERTO = 3000;
+const PUERTO = 3001;
 
 app.use(fileUpload());
 
@@ -16,7 +19,7 @@ app.post('/upload',(req,res) =>{
     let archivo = req.files.sampleFile;
     let nombreArchivo = archivo.name
     let tipo = archivo.mimetype
-    console.log()
+    console.log(tipo)
     archivo.mv(nombreArchivo,(err)=>{
         if(err){
             return res.status(500).send(err)
@@ -24,6 +27,9 @@ app.post('/upload',(req,res) =>{
 
         if("application/vnd.ms-excel" == tipo){
             convertirXls(nombreArchivo)
+        }else if("application/pdf" == tipo){
+            console.log("Entre")
+            convertirPdf(nombreArchivo)
         }
 
         res.send("Files uploaded!");
@@ -46,17 +52,29 @@ app.listen( app.get('port') , () => {
     console.log("Express corriendo, para terminar preciona Ctrl-C")  ;
 });
 
-function convertirXls(input){
-var res = {};
+function convertirPdf(nombreArchivo){
+    fs.readFile(nombreArchivo, function (err, buffer) {
+        if (err) return console.log(err);
+    
+        pdf2table.parse(buffer, function (err, rows, rowsdebug) {
+            if(err) return console.log(err);
+    
+            console.log(rows);
+        });
+    });
+}
 
-node_xj({  
-  input: "hd.xls", 
-  output: "bla.json"
-}, function(err, result) {
-  if(err) {
-    console.error(err);
-  } else {
-      console.log(result)
-  }
-});
+function convertirXls(nombreArchivo){
+    var res = {};
+
+    node_xj({  
+    input: "nombreArchivo", 
+    output: "bla.json"
+    }, function(err, result) {
+    if(err) {
+        console.error(err);
+    } else {
+        console.log(result)
+    }
+    });
 }
