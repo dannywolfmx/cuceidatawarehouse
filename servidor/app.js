@@ -1,6 +1,28 @@
-const express = require('express');
-const app = express();
-const PUERTO = 3000
+const express = require('express'),
+    app = express(),
+    fileUpload = require("express-fileupload");
+
+
+const PUERTO = 3000;
+
+app.use(fileUpload());
+
+
+app.post('/upload',(req,res) =>{
+    if(!req.files){
+        return res.status(400).send("No files were uploaded");
+    }
+
+    let archivo = req.files.sampleFile;
+    let nombreArchivo = archivo.name
+    archivo.mv(nombreArchivo,(err)=>{
+        if(err){
+            return res.status(500).send(err)
+        }
+        res.send("Files uploaded!");
+    })
+    
+})
 
 
 //Fijamos el puerto de escucha
