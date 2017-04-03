@@ -1,14 +1,18 @@
 const express = require('express'),
     app = express(),
-    fs = require("fs"),
+    file = require("fs"),
     fileUpload = require("express-fileupload"),
     node_xj = require("xls-to-json"),
     PDFParser = require("pdf2json")
-    pdf2table = require("pdf2table");
+    pdf2table = require("pdf2table"),
+    csvtojson = require("csvtojson"),
+    xml2js = require("xml2js");
 
 const PUERTO = 3001;
 
 app.use(fileUpload());
+
+app.use(express.static(__dirname + '/views'));
 
 
 app.post('/upload',(req,res) =>{
@@ -26,13 +30,17 @@ app.post('/upload',(req,res) =>{
         }
 
         if("application/vnd.ms-excel" == tipo){
-            convertirXls(nombreArchivo)
+            convertirXls(nombreArchivo,res)
         }else if("application/pdf" == tipo){
-            console.log("Entre")
-            convertirPdf(nombreArchivo)
+            convertirPdf(nombreArchivo,res)
+        }else if("text/csv" == tipo){
+            convertirCSV(nombreArchivo,res)
+        }else if("text/xml" == tipo){
+            convertirXML(nombreArchivo,res)
+        }else{
+            res.send("Tipo desconocido");
         }
 
-        res.send("Files uploaded!");
     })
 
 
@@ -45,36 +53,66 @@ app.post('/upload',(req,res) =>{
 app.set('port', process.env.PORT || PUERTO);
 
 
-app.get('/',(req,res) => res.send("Express esta trabajando"));
+app.get('/',(req,res) => {
+    res.sendFile("./index.html")
+})
 
 app.listen( app.get('port') , () => {
     console.log("Express corriendo en 127.0.0.1:"+PUERTO);
     console.log("Express corriendo, para terminar preciona Ctrl-C")  ;
 });
 
-function convertirPdf(nombreArchivo){
-    fs.readFile(nombreArchivo, function (err, buffer) {
+function convertirXML(nombreArchivo,res){
+
+    const parser = new xml2js.Parser();
+
+    file.readFile(nombreArchivo, function (err, buffer) {
+        parser.parseString(buffer,(err,result) =>{
+            res.send(JSON.stringify(result))
+        })
+    });
+
+    file.unlink(nombreArchivo)
+
+}
+
+function convertirCSV(nombreArchivo,res){
+    var coleccion = []
+    csvtojson().fromFile(nombreArchivo).on('json',(jsonObj)=>{
+        coleccion.push(jsonObj)
+    }).on('done',() =>{
+        res.send(JSON.stringify(coleccion))
+        file.unlink(nombreArchivo)
+    })
+
+}
+
+function convertirPdf(nombreArchivo,res){
+    file.readFile(nombreArchivo, function (err, buffer) {
         if (err) return console.log(err);
     
         pdf2table.parse(buffer, function (err, rows, rowsdebug) {
-            if(err) return console.log(err);
-    
+            if(err){
+             return console.log(err);
+            }
+             res.send(JSON.stringify(rows))   
             console.log(rows);
+             file.unlink(nombreArchivo)
         });
     });
 }
 
-function convertirXls(nombreArchivo){
-    var res = {};
-
+function convertirXls(nombreArchivo,res){
     node_xj({  
-    input: "nombreArchivo", 
-    output: "bla.json"
+    input: "hd.xls",
+    output:null
     }, function(err, result) {
     if(err) {
         console.error(err);
     } else {
         console.log(result)
+        res.send(JSON.stringify(result))   
+        file.unlink(nombreArchivo)
     }
     });
 }

@@ -9,10 +9,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "csvtojson": "^1.1.4",
     "express": "^4.15.2",
     "express-fileupload": "^0.1.2",
     "pdf2json": "^1.1.7",
     "pdf2table": "0.0.1",
-    "textract": "^2.1.1"
+    "textract": "^2.1.1",
+    "xml2js": "^0.4.17"
   }
 }
