@@ -6,7 +6,8 @@ const express = require('express'),
     PDFParser = require("pdf2json")
     pdf2table = require("pdf2table"),
     csvtojson = require("csvtojson"),
-    xml2js = require("xml2js");
+    xml2js = require("xml2js"),
+    xlscToJson = require("xlsx-to-json");
 
 const PUERTO = 3001;
 
@@ -28,12 +29,17 @@ app.post('/upload',(req,res) =>{
         if(err){
             return res.status(500).send(err)
         }
-
+        
         if("application/vnd.ms-excel" == tipo){
             convertirXls(nombreArchivo,res)
         }else if("application/pdf" == tipo){
+
+            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
             convertirPdf(nombreArchivo,res)
-        }else if("text/csv" == tipo){
+        }else if("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" == tipo){
+            convertirXLSX(nombreArchivo,res)
+        }
+        else if("text/csv" == tipo){
             convertirCSV(nombreArchivo,res)
         }else if("text/xml" == tipo){
             convertirXML(nombreArchivo,res)
@@ -104,7 +110,22 @@ function convertirPdf(nombreArchivo,res){
 
 function convertirXls(nombreArchivo,res){
     node_xj({  
-    input: "hd.xls",
+    input: nombreArchivo,
+    output:null
+    }, function(err, result) {
+    if(err) {
+        console.error(err);
+    } else {
+        console.log(result)
+        res.send(JSON.stringify(result))   
+        file.unlink(nombreArchivo)
+    }
+    });
+}
+
+function convertirXLSX(nombreArchivo,res){
+    xlscToJson({  
+    input: nombreArchivo,
     output:null
     }, function(err, result) {
     if(err) {
