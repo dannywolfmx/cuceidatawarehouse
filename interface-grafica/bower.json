@@ -3,7 +3,9 @@
   "main": "index.html",
   "dependencies": {
     "polymer": "Polymer/polymer#^1.4.0",
-    "vaadin-upload": "^1.1.4"
+    "vaadin-upload": "^1.1.4",
+    "vaadin-grid": "^1.2.2",
+    "handsontable": "^0.31.2"
   },
   "devDependencies": {
     "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
