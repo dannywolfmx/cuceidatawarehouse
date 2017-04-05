@@ -3,11 +3,14 @@ const express = require('express'),
     file = require("fs"),
     fileUpload = require    ( "express-fileupload" ),
     node_xj     = require   (   "xls-to-json"   ),
-    PDFParser   = require   (   "pdf2json"      )
+    PDFParser   = require   (   "pdf2json"      ),
     pdf2table   = require   (   "pdf2table"     ),
     csvtojson   = require   (   "csvtojson"     ),
     xml2js      = require   (   "xml2js"        ),
-    xlscToJson  = require   (   "xlsx-to-json"  );
+    xlscToJson  = require   (   "xlsx-to-json"  ),
+    translate = require('google-translate-api'),
+    async = require('asyncawait/async'),
+    await = require('asyncawait/await');
 
 const dataBase = []
 
@@ -19,7 +22,7 @@ app.use(express.static(__dirname + '/public'));
 app.use('/bower_components',  express.static(__dirname + './public/bower_components'));
 
 app.use(function(req, res, next) {
-  var allowedOrigins = ['http://127.0.0.1:3001', 'http://localhost:3001', 'http://danielmenchaca:3001'];
+  var allowedOrigins = ['http://127.0.0.1:8080', 'http://localhost:8080', 'http://danielmenchaca:3001'];
   var origin = req.headers.origin;
   if(allowedOrigins.indexOf(origin) > -1){
        res.setHeader('Access-Control-Allow-Origin', origin);
@@ -93,13 +96,20 @@ function convertirXML(nombreArchivo,res){
 
     file.readFile(nombreArchivo, function (err, buffer) {
         parser.parseString(buffer,(err,result) =>{
-            datos = JSON.stringify(result)
-            res.send(datos)   
-            agregaDatabase(datos)
-            res.send(JSON.stringify(result))
-        })
-    });
+            console.log(result)
 
+            traductor(result).then((datos)=>{
+                d = JSON.stringify(datos)
+                res.send(d)   
+                agregaDatabase(d)
+                file.unlink(nombreArchivo)
+            })
+
+        })
+
+
+    });
+    
     file.unlink(nombreArchivo)
 
 }
@@ -109,10 +119,12 @@ function convertirCSV(nombreArchivo,res){
     csvtojson().fromFile(nombreArchivo).on('json',(jsonObj)=>{
         coleccion.push(jsonObj)
     }).on('done',() =>{
-        datos = JSON.stringify(coleccion)
-        res.send(datos)   
-        agregaDatabase(datos)
-        file.unlink(nombreArchivo)
+            traductor(coleccion).then((datos)=>{
+                d = JSON.stringify(datos)
+                res.send(d)   
+                agregaDatabase(d)
+                file.unlink(nombreArchivo)
+            })
     })
 
 }
@@ -125,10 +137,13 @@ function convertirPdf(nombreArchivo,res){
             if(err){
              return console.log(err);
             }
-             datos = JSON.stringify(rows)
-             res.send(datos)   
-             agregaDatabase(datos)
-             file.unlink(nombreArchivo)
+            traductor(rows).then((datos)=>{
+                d = JSON.stringify(datos)
+                res.send(d)   
+                agregaDatabase(d)
+                file.unlink(nombreArchivo)
+            })
+
         });
     });
 }
@@ -141,10 +156,13 @@ function convertirXls(nombreArchivo,res){
     if(err) {
         console.error(err);
     } else {
-        datos = JSON.stringify(result);
-        res.send(datos)   
-        agregaDatabase(datos)
-        file.unlink(nombreArchivo)
+        
+        traductor(result).then((datos)=>{
+            d = JSON.stringify(datos)
+            res.send(d)   
+            agregaDatabase(d)
+            file.unlink(nombreArchivo)
+        })
     }
     });
 }
@@ -157,10 +175,12 @@ function convertirXLSX(nombreArchivo,res){
     if(err) {
         console.error(err);
     } else {
-        datos = JSON.stringify(result);
-        res.send(datos)   
-        agregaDatabase(datos)
-        file.unlink(nombreArchivo)
+        traductor(result).then((datos)=>{
+            d = JSON.stringify(datos)
+            res.send(d)   
+            agregaDatabase(d)
+            file.unlink(nombreArchivo)
+        })
     }
     });
 }
@@ -168,5 +188,43 @@ function convertirXLSX(nombreArchivo,res){
 
 function agregaDatabase(datos){
     dataBase.push(datos);
-    console.log(dataBase[0])
+}
+
+function traductor(elementos){
+    let chain = Promise.resolve();
+    promesas = []
+    return Promise.all(elementos.map((obj)=>{
+    var cp = obj
+        return  Promise.all(Object.keys(obj).map((key) =>{
+                    return traduceEsp(obj[key]).then(x => {
+                        obj[key] = x
+                        return obj
+                        }); 
+        })).then(
+            x => {
+                return x.slice() // slice makes copy of array before sorting it
+                .sort(function(a,b){
+                    return a > b;
+                })
+                .reduce(function(a,b){
+                    if (a.slice(-1)[0] !== b) a.push(b); // slice(-1)[0] means last item in array without removing it (like .pop())
+                    return a;
+                },[]);
+            }
+        )
+
+    })).then(x =>{
+        return [].concat.apply([],x);
+    })
+}
+
+
+function traduceEsp(text){
+    return translate(text, {to: 'es'}).then(res => {
+        return res.text
+        //=> nl 
+    }).catch(err => {
+        console.error(err);
+    })
+
 }
