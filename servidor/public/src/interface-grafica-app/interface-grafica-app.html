@@ -1,0 +1,104 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/vaadin-upload/vaadin-upload.html">
+<link rel="import" href="../../bower_components/vaadin-grid/vaadin-grid.html">
+<link rel="import" href="">
+
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+
+
+
+<dom-module id="interface-grafica-app">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    
+  <vaadin-upload  i18n="[[i18n]]" file-reject="prueba" id="rejectEventDemo" name="sampleFile" target="/upload" method="POST"></vaadin-upload>
+
+  [[datos]]
+
+
+
+
+  </template>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    var socket = io.connect('http://localhost:3001');
+    socket.on('news', function (data) {
+      console.log(data);
+      socket.emit('my other event', { my: 'data' });
+    });
+  </script>
+  <script>
+    Polymer({
+
+      is: 'interface-grafica-app',
+
+      properties: {
+        datos:{
+          type:Array,
+          value:[]
+        },
+        i18n:{
+          type:Object,
+          value:{
+              dropFiles: {
+              one: 'Suelta el archivo aqui...', 
+              many: 'Suelta los archivos aqui...'
+              },
+              addFiles: {
+              one: 'Selecciona un archivo',
+              many: 'Selecciona los archivos'
+              },
+              cancel: 'Cancelar',
+              error: {
+              tooManyFiles: 'Demaciados archivos',
+              fileIsTooBig: 'Archivo demaciado grande',
+              incorrectFileType: 'Tipo incorrecto de archivos'
+              },
+              uploading: {
+              status: {
+                connecting: 'Conectando',
+                stalled: 'Stalled.',
+                processing: 'Procesando archivos...'
+              },
+              remainingTime: {
+                prefix: 'Tiempo reamanente: ',
+                unknown: 'Tiempo desconocido'
+              },
+              error: {
+                serverUnavailable: 'Servidor no disponible',
+                unexpectedServerError: 'Error desconocido en servidor',
+                forbidden: 'Acceso prohibido'
+              }
+              },
+              units: {
+              size: ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
+              },
+              formatSize: function(bytes) {
+              // returns the size followed by the best suitable unit
+              },
+              formatTime: function(seconds, [secs, mins, hours]) {
+              // returns a 'HH:MM:SS' string
+              }
+            }
+        }
+
+          
+      },
+      attached:function(){
+        self = this
+
+        document.querySelector('vaadin-upload').addEventListener('upload-response', function (e) {
+            console.log(e.detail.xhr.response); // true
+            self.set("datos",e.detail.xhr.response)
+        })
+      },
+
+
+    });
+
+  </script>
+</dom-module>

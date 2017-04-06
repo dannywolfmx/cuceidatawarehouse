@@ -16,6 +16,7 @@
     "google-translate-api": "^2.2.2",
     "pdf2json": "^1.1.7",
     "pdf2table": "0.0.1",
+    "socket.io": "^1.7.3",
     "textract": "^2.1.1",
     "xlsx-to-json": "^0.2.4",
     "xml2js": "^0.4.17"

@@ -1,5 +1,7 @@
 const express = require('express'),
     app = express(),
+    http = require("http"),
+    server = http.createServer(app);
     file = require("fs"),
     fileUpload = require    ( "express-fileupload" ),
     node_xj     = require   (   "xls-to-json"   ),
@@ -9,8 +11,7 @@ const express = require('express'),
     xml2js      = require   (   "xml2js"        ),
     xlscToJson  = require   (   "xlsx-to-json"  ),
     translate = require('google-translate-api'),
-    async = require('asyncawait/async'),
-    await = require('asyncawait/await');
+    io = require('socket.io')(server)
 
 const dataBase = []
 
@@ -32,6 +33,13 @@ app.use(function(req, res, next) {
   res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   res.header('Access-Control-Allow-Credentials', true);
   return next();
+});
+
+io.on('connection', function (socket) {
+  socket.emit('news', { hello: 'Holis' });
+  socket.on('my other event', function (data) {
+    console.log(data);
+  });
 });
 
 
@@ -85,7 +93,7 @@ app.get('/array',(req,res) => {
     res.send(dataBase[0])
 })
 
-app.listen( app.get('port') , () => {
+server.listen( app.get('port') , () => {
     console.log("Express corriendo en 127.0.0.1:"+PUERTO);
     console.log("Express corriendo, para terminar preciona Ctrl-C")  ;
 });
@@ -109,8 +117,6 @@ function convertirXML(nombreArchivo,res){
 
 
     });
-    
-    file.unlink(nombreArchivo)
 
 }
 
@@ -191,10 +197,9 @@ function agregaDatabase(datos){
 }
 
 function traductor(elementos){
-    let chain = Promise.resolve();
-    promesas = []
+
     return Promise.all(elementos.map((obj)=>{
-    var cp = obj
+        console.log(obj)
         return  Promise.all(Object.keys(obj).map((key) =>{
                     return traduceEsp(obj[key]).then(x => {
                         obj[key] = x
@@ -221,8 +226,8 @@ function traductor(elementos){
 
 function traduceEsp(text){
     return translate(text, {to: 'es'}).then(res => {
+        console.log(res.text)
         return res.text
-        //=> nl 
     }).catch(err => {
         console.error(err);
     })
