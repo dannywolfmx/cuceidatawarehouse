@@ -5,7 +5,12 @@
     "polymer": "Polymer/polymer#^1.4.0",
     "vaadin-upload": "^1.1.4",
     "vaadin-grid": "^1.2.2",
-    "handsontable": "^0.31.2"
+    "handsontable": "^0.31.2",
+    "paper-drawer-panel": "PolymerElements/paper-drawer-panel#^1.0.11",
+    "paper-menu": "PolymerElements/paper-menu#^1.2.2",
+    "paper-item": "PolymerElements/paper-item#^1.2.1",
+    "app-route": "PolymerElements/app-route#^0.9.3",
+    "login-fire": "^0.1.5"
   },
   "devDependencies": {
     "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",

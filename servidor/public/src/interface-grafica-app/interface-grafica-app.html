@@ -4,32 +4,74 @@
 <link rel="import" href="">
 
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../bower_components/paper-drawer-panel/paper-drawer-panel.html">
+<link rel="import" href="../../bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
 
+<link rel="import" href="../../bower_components/.html">
 
+<link rel="import" href="../login-component/login-component.html">
+
+<script src="/socket.io/socket.io.js"></script>
 
 <dom-module id="interface-grafica-app">
   <template>
     <style>
       :host {
         display: block;
+        background:#333333;
+      }
+      paper-drawer-panel {
+        --paper-drawer-panel-left-drawer-container: {
+          background-color: #333333;
+        };
+      }
+
+      paper-menu{
+          --paper-menu-background-color:{
+            background-color:transparent;
+          }
+          --paper-menu:{
+
+          }
+      }
+
+      paper-item:hover{
+            opacity:1;
+            background-color:#555555;
+      }
+
+      paper-item{
+          color: #fff;
+          opacity: 0.7;
       }
     </style>
     
-  <vaadin-upload  i18n="[[i18n]]" file-reject="prueba" id="rejectEventDemo" name="sampleFile" target="/upload" method="POST"></vaadin-upload>
+  <paper-drawer-panel>
+    <paper-header-panel drawer>
+      <paper-toolbar></paper-toolbar>
+      <paper-menu>
+          <paper-item>Subir archivos</paper-item>
+      </paper-menu>
 
-  [[datos]]
+    </paper-header-panel>
+    <paper-header-panel main>
+      <paper-toolbar></paper-toolbar>
 
 
+    <login-component></login-component>
+      <vaadin-upload  i18n="[[i18n]]" file-reject="prueba" id="rejectEventDemo" name="sampleFile" target="/upload" method="POST"></vaadin-upload>
+
+      [[datos]]
+
+    </paper-header-panel>
+  </paper-drawer-panel>
 
 
   </template>
-  <script src="/socket.io/socket.io.js"></script>
+  
   <script>
-    var socket = io.connect('http://localhost:3001');
-    socket.on('news', function (data) {
-      console.log(data);
-      socket.emit('my other event', { my: 'data' });
-    });
+
   </script>
   <script>
     Polymer({
@@ -92,9 +134,20 @@
         self = this
 
         document.querySelector('vaadin-upload').addEventListener('upload-response', function (e) {
-            console.log(e.detail.xhr.response); // true
+            //console.log(e.detail.xhr.response); 
             self.set("datos",e.detail.xhr.response)
         })
+
+        document.querySelector('vaadin-upload').addEventListener('upload-response', function (e) {
+            //console.log(e.detail.xhr.response); 
+            self.set("datos",e.detail.xhr.response)
+        })
+        var socket = io.connect('http://localhost:3001');
+        socket.on('news', function (data) {
+          console.log(data);
+          self.set("datos",data)
+        });
+
       },
 
 
