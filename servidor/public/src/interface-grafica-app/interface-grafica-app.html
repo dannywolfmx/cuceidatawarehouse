@@ -8,68 +8,70 @@
 <link rel="import" href="../../bower_components/paper-menu/paper-menu.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
 
-<link rel="import" href="../../bower_components/.html">
 
-<link rel="import" href="../login-component/login-component.html">
+
+<link rel="import" href="../login-component/login-panel.html">
 
 <script src="/socket.io/socket.io.js"></script>
 
 <dom-module id="interface-grafica-app">
   <template>
     <style>
-      :host {
+       :host {
         display: block;
-        background:#333333;
+        background: #333333;
       }
+      
       paper-drawer-panel {
         --paper-drawer-panel-left-drawer-container: {
           background-color: #333333;
-        };
+        }
+        ;
       }
-
-      paper-menu{
-          --paper-menu-background-color:{
-            background-color:transparent;
-          }
-          --paper-menu:{
-
-          }
+      
+      paper-menu {
+        --paper-menu-background-color: {
+          background-color: transparent;
+        }
+        --paper-menu: {}
       }
-
-      paper-item:hover{
-            opacity:1;
-            background-color:#555555;
+      
+      paper-item:hover {
+        opacity: 1;
+        background-color: #555555;
       }
-
-      paper-item{
-          color: #fff;
-          opacity: 0.7;
+      
+      paper-item {
+        color: #fff;
+        opacity: 0.7;
       }
     </style>
-    
-  <paper-drawer-panel>
-    <paper-header-panel drawer>
-      <paper-toolbar></paper-toolbar>
-      <paper-menu>
+
+    <paper-drawer-panel>
+      <paper-header-panel drawer>
+        <paper-toolbar></paper-toolbar>
+        <paper-menu>
+          <paper-item>Login</paper-item>
           <paper-item>Subir archivos</paper-item>
-      </paper-menu>
+        </paper-menu>
 
-    </paper-header-panel>
-    <paper-header-panel main>
-      <paper-toolbar></paper-toolbar>
+      </paper-header-panel>
+      <paper-header-panel main>
+        <paper-toolbar></paper-toolbar>
 
+        <vaadin-upload i18n="[[i18n]]" file-reject="prueba" id="rejectEventDemo" name="sampleFile" target="/upload" method="POST"></vaadin-upload>
 
-    <login-component></login-component>
-      <vaadin-upload  i18n="[[i18n]]" file-reject="prueba" id="rejectEventDemo" name="sampleFile" target="/upload" method="POST"></vaadin-upload>
+      </paper-header-panel>
+    </paper-drawer-panel>
 
-      [[datos]]
+    <template is="dom-if" if="true">
 
-    </paper-header-panel>
-  </paper-drawer-panel>
-
+      <login-panel></login-panel>
+      <registro-panel></registro-panel>
+    </template>
 
   </template>
-  
+
   <script>
 
   </script>
@@ -79,28 +81,28 @@
       is: 'interface-grafica-app',
 
       properties: {
-        datos:{
-          type:Array,
-          value:[]
+        datos: {
+          type: Array,
+          value: []
         },
-        i18n:{
-          type:Object,
-          value:{
-              dropFiles: {
-              one: 'Suelta el archivo aqui...', 
+        i18n: {
+          type: Object,
+          value: {
+            dropFiles: {
+              one: 'Suelta el archivo aqui...',
               many: 'Suelta los archivos aqui...'
-              },
-              addFiles: {
+            },
+            addFiles: {
               one: 'Selecciona un archivo',
               many: 'Selecciona los archivos'
-              },
-              cancel: 'Cancelar',
-              error: {
+            },
+            cancel: 'Cancelar',
+            error: {
               tooManyFiles: 'Demaciados archivos',
               fileIsTooBig: 'Archivo demaciado grande',
               incorrectFileType: 'Tipo incorrecto de archivos'
-              },
-              uploading: {
+            },
+            uploading: {
               status: {
                 connecting: 'Conectando',
                 stalled: 'Stalled.',
@@ -115,43 +117,42 @@
                 unexpectedServerError: 'Error desconocido en servidor',
                 forbidden: 'Acceso prohibido'
               }
-              },
-              units: {
+            },
+            units: {
               size: ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
-              },
-              formatSize: function(bytes) {
+            },
+            formatSize: function (bytes) {
               // returns the size followed by the best suitable unit
-              },
-              formatTime: function(seconds, [secs, mins, hours]) {
+            },
+            formatTime: function (seconds, [secs, mins, hours]) {
               // returns a 'HH:MM:SS' string
-              }
             }
+          }
         }
 
-          
+
       },
-      attached:function(){
+      attached: function () {
         self = this
 
         document.querySelector('vaadin-upload').addEventListener('upload-response', function (e) {
-            //console.log(e.detail.xhr.response); 
-            self.set("datos",e.detail.xhr.response)
+          //console.log(e.detail.xhr.response); 
+          self.set("datos", e.detail.xhr.response)
         })
 
         document.querySelector('vaadin-upload').addEventListener('upload-response', function (e) {
-            //console.log(e.detail.xhr.response); 
-            self.set("datos",e.detail.xhr.response)
+          //console.log(e.detail.xhr.response); 
+          self.set("datos", e.detail.xhr.response)
         })
         var socket = io.connect('http://localhost:3001');
         socket.on('news', function (data) {
           console.log(data);
-          self.set("datos",data)
+          self.set("datos", data)
         });
 
       },
 
 
     });
-
   </script>
 </dom-module>
