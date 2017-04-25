@@ -62,22 +62,22 @@
 
 
 
-      <paper-drawer-panel hidden$="[[!uregistrado]]">
-        <paper-header-panel drawer>
-          <paper-toolbar></paper-toolbar>
-          <paper-menu>
-            <paper-item>Login</paper-item>
-            <paper-item>Subir archivos</paper-item>
-          </paper-menu>
+    <paper-drawer-panel hidden$="[[!uregistrado]]">
+      <paper-header-panel drawer>
+        <paper-toolbar></paper-toolbar>
+        <paper-menu>
+          <paper-item>Login</paper-item>
+          <paper-item>Subir archivos</paper-item>
+        </paper-menu>
 
-        </paper-header-panel>
-        <paper-header-panel main>
-          <paper-toolbar></paper-toolbar>
+      </paper-header-panel>
+      <paper-header-panel main>
+        <paper-toolbar></paper-toolbar>
 
-          <vaadin-upload i18n="[[i18n]]" file-reject="prueba" id="rejectEventDemo" name="sampleFile" target="/upload" method="POST"></vaadin-upload>
+        <vaadin-upload i18n="[[i18n]]" on-upload-before="agregarheader" id="fileupdate" name="sampleFile" target="/upload" method="POST"></vaadin-upload>
 
-        </paper-header-panel>
-      </paper-drawer-panel>
+      </paper-header-panel>
+    </paper-drawer-panel>
 
 
 
@@ -118,12 +118,12 @@
         usuario: Object,
         token: {
           type: String,
-          value:"",
-          observer:"registrado"
+          value: "",
+          observer: "registrado"
         },
-        uregistrado:{
-          type:Boolean,
-          value:false
+        uregistrado: {
+          type: Boolean,
+          value: false
         },
         i18n: {
           type: Object,
@@ -190,10 +190,18 @@
           self.set("datos", data)
         });
 
+        this.$.fileupdate.headers = {
+          Authorization: "Bear eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI1OGZmMTNkYTgyYzZkYzRlNjFiODIzYTMiLCJpYXQiOjE0OTMxNTgxMzgsImV4cCI6MTQ5NDM2NzczOH0.xs7tOjcXYhGQt6ROotjpVPCfXWum-ai0J9k4pP0czEQ"
+        }
       },
       registrado: function () {
-        this.set("uregistrado",(this.token.length > 0));
+        this.set("uregistrado", (this.token.length > 0));
       },
+      agregarheader: function () {
+        this.$.fileupdate.headers = {
+          Authorization: "Bear "+this.token
+        }
+      }
 
 
     });

@@ -10,19 +10,14 @@ function isAuth(req, res, next) {
         })
     } else {
         const token = req.headers.authorization.split(" ")[1]// El segundo elemento del array
-                console.log("Decodificando")
         service.decodeToken(token).then(
             response => {
-                console.log("Decodificado")
-                
-                
                 req.usuario = response
                 next()
             }
         ).catch(response => {
-            console.log("Holas")
             res.status(response.status).send({
-                mensaje:response.mensaje
+                mensaje: response.mensaje
             })
 
         })
