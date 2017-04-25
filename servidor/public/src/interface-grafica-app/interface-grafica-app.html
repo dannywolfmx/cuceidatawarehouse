@@ -7,19 +7,23 @@
 <link rel="import" href="../../bower_components/paper-drawer-panel/paper-drawer-panel.html">
 <link rel="import" href="../../bower_components/paper-menu/paper-menu.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
-
+<link rel="import" href="../../bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="../../bower_components/paper-tabs/paper-tab.html">
+<link rel="import" href="../../bower_components/neon-animation/neon-animation.html">
+<link rel="import" href="../../bower_components/neon-animation/neon-animated-pages.html">
 
 
 <link rel="import" href="../login-component/login-panel.html">
+<link rel="import" href="../login-component/registro-panel.html">
 
 <script src="/socket.io/socket.io.js"></script>
 
 <dom-module id="interface-grafica-app">
   <template>
+
     <style>
        :host {
         display: block;
-        background: #333333;
       }
       
       paper-drawer-panel {
@@ -45,30 +49,52 @@
         color: #fff;
         opacity: 0.7;
       }
+      
+      login-panel,
+      registro-panel {
+        display: block;
+        margin: 0 auto;
+        max-width: 500px;
+      }
     </style>
 
-    <paper-drawer-panel>
-      <paper-header-panel drawer>
-        <paper-toolbar></paper-toolbar>
-        <paper-menu>
-          <paper-item>Login</paper-item>
-          <paper-item>Subir archivos</paper-item>
-        </paper-menu>
 
-      </paper-header-panel>
-      <paper-header-panel main>
-        <paper-toolbar></paper-toolbar>
 
-        <vaadin-upload i18n="[[i18n]]" file-reject="prueba" id="rejectEventDemo" name="sampleFile" target="/upload" method="POST"></vaadin-upload>
 
-      </paper-header-panel>
-    </paper-drawer-panel>
 
-    <template is="dom-if" if="true">
+      <paper-drawer-panel hidden$="[[!uregistrado]]">
+        <paper-header-panel drawer>
+          <paper-toolbar></paper-toolbar>
+          <paper-menu>
+            <paper-item>Login</paper-item>
+            <paper-item>Subir archivos</paper-item>
+          </paper-menu>
 
-      <login-panel></login-panel>
-      <registro-panel></registro-panel>
-    </template>
+        </paper-header-panel>
+        <paper-header-panel main>
+          <paper-toolbar></paper-toolbar>
+
+          <vaadin-upload i18n="[[i18n]]" file-reject="prueba" id="rejectEventDemo" name="sampleFile" target="/upload" method="POST"></vaadin-upload>
+
+        </paper-header-panel>
+      </paper-drawer-panel>
+
+
+
+    <div hidden$="[[uregistrado]]">
+      <paper-tabs selected="{{loginPanel}}">
+        <paper-tab>Iniciar</paper-tab>
+        <paper-tab>Registrarse</paper-tab>
+      </paper-tabs>
+
+      <neon-animated-pages selected=[[loginPanel]]>
+        <login-panel usuario="{{usuario}}" token={{token}}></login-panel>
+        <registro-panel usuario="{{usuario}}" token={{token}}></registro-panel>
+      </neon-animated-pages>
+
+    </div>
+
+
 
   </template>
 
@@ -84,6 +110,20 @@
         datos: {
           type: Array,
           value: []
+        },
+        loginPanel: {
+          type: Boolean,
+          value: 0
+        },
+        usuario: Object,
+        token: {
+          type: String,
+          value:"",
+          observer:"registrado"
+        },
+        uregistrado:{
+          type:Boolean,
+          value:false
         },
         i18n: {
           type: Object,
@@ -150,6 +190,9 @@
           self.set("datos", data)
         });
 
+      },
+      registrado: function () {
+        this.set("uregistrado",(this.token.length > 0));
       },
 
 

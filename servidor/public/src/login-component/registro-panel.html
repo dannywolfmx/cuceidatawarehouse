@@ -4,24 +4,40 @@
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
 <link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
-
-
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/iron-form/iron-form.html">
+<link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
 <dom-module id="registro-panel">
 
     <style>
-         :host {}
-        
         paper-card {
             vertical-align: top;
-            padding: 20px;
-            min-height: 460px;
+            --paper-card-header: {
+                background: #2196F3;
+            }
+            --paper-card-header-text: {
+                font-weight: bold;
+                text-align: center;
+                color: white;
+            }
         }
-        .card-content{
+        
+        .card-content {
             min-height: 260px;
         }
         
         iron-icon {
             padding-right: 6px;
+        }
+        
+        paper-button {
+            width: 100%;
+            height: 64px;
+            margin: auto;
+            margin-top: 16px;
+            color: white;
+            background: #2196F3;
+            font-weight: bold;
         }
     </style>
 
@@ -30,41 +46,67 @@
         <paper-card heading="Registrate" image="" elevation="1" animated-shadow="false">
             <div class="card-content">
 
-                <form action="">
-                    <paper-input type="email" error-message="Necesitas colocar un correo valido!" required auto-validate id="correo" label="Correo">
+                <form is="iron-form" on-iron-form-error="error" on-iron-form-response="respuesta" id="form" method="post" action="/signup">
+                    <paper-input type="text" error-message="Necesitas colocar un nombre valido!" required auto-validate id="nombre" label="Nombre"
+                        name="nombre">
+
+                        <iron-icon icon="account-circle" prefix></iron-icon>
+
+                    </paper-input>
+
+                    <paper-input type="email" error-message="Necesitas colocar un correo valido!" required auto-validate id="correo" label="Correo"
+                        name="correo">
 
                         <iron-icon icon="mail" prefix></iron-icon>
 
                     </paper-input>
 
                     <paper-input type="password" error-message="Necesitas colocar una password valida!" required auto-validate id="password"
-                        label="Password">
+                        label="Password" name="password" validator="[[match]]">
 
                         <iron-icon icon="https" prefix></iron-icon>
 
                     </paper-input>
 
-                    <paper-input type="password" error-message="Necesitas colocar una password valida!" required auto-validate id="confirmar-password"
-                        label="Confirma tu password">
-
-                        <iron-icon icon="https" prefix></iron-icon>
-                        
-                    </paper-input>
 
                 </form>
-                
+
             </div>
             <div class="card-actions">
 
+                <paper-button on-click="enviar" raised>Enviar</paper-button>
+
+
             </div>
         </paper-card>
+        <paper-toast id="toast" text=""></paper-toast>
 
     </template>
 
     <script>
         Polymer({
             is: "registro-panel",
-
+            properties: {
+                usuario: {
+                    type: Object,
+                    notife: true
+                },
+                token: {
+                    type: String,
+                    notify: true
+                }
+            },
+            enviar: function () {
+                this.$.form.submit()
+            },
+            respuesta: function (e) {
+                this.set("usuario", e.detail.response.usuario);
+                this.set("token", e.detail.response.token);
+            },
+            error: function (e) {
+                this.$.toast.text = "Error al registrarse, prueba con otro correo"
+                this.$.toast.open();
+            }
         })
     </script>
 
