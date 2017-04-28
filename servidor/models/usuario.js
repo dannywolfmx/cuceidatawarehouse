@@ -9,33 +9,38 @@ const UsuarioSchema = Schema({
     type: String,
     unique: true
   },
-  nombre:String,
+  nombre: String,
   password: {
-    type:String
+    type: String
   },
-  signupDate:{
-    type:Date,
-    default:Date.now()
+  archivos: [{
+    direccion: { type: String, require: true }
+
+  }]
+  ,
+  signupDate: {
+    type: Date,
+    default: Date.now()
   },
-  lastLogin:Date
+  lastLogin: Date
 })
 
 
 //encryptamos la password
-UsuarioSchema.pre('save',function (next){
+UsuarioSchema.pre('save', function (next) {
   let usuario = this
-  
-  if(!usuario.isModified('password')){
+
+  if (!usuario.isModified('password')) {
     return next()
   }
-  bcrypt.genSalt(10,(err,salt)=>{
-    if(err){
+  bcrypt.genSalt(10, (err, salt) => {
+    if (err) {
       return next(err)
-    }else{
-      bcrypt.hash(usuario.password,salt,null,function(err,hash){
-        if(err){
+    } else {
+      bcrypt.hash(usuario.password, salt, null, function (err, hash) {
+        if (err) {
           return next(err)
-        }else{
+        } else {
           usuario.password = hash
           next()
         }
@@ -43,12 +48,12 @@ UsuarioSchema.pre('save',function (next){
     }
   })
 })
-UsuarioSchema.methods.comparePassword = function(candidate,callback){
-  bcrypt.compare(candidate,this.password,function(err,isMatch){
-    if(err){
+UsuarioSchema.methods.comparePassword = function (candidate, callback) {
+  bcrypt.compare(candidate, this.password, function (err, isMatch) {
+    if (err) {
       return callback(err);
-    }else{
-      callback(undefined,isMatch)
+    } else {
+      callback(undefined, isMatch)
     }
   })
 }

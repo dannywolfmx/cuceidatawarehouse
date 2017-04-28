@@ -1,9 +1,9 @@
 'use strict'
 const TIPOS_ARCHIVOS = {
     csv: "text/csv",
-    pdf:"application/pdf",
-    xls:"application/vnd.ms-excel",
-    xlsx:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    pdf: "application/pdf",
+    xls: "application/vnd.ms-excel",
+    xlsx: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     xml: "text/xml"
 }
 
@@ -11,39 +11,40 @@ const traductor = require("./traductor");
 
 function agregaDatabase(datos) {
     //dataBase.push(datos);
-    console.log(datos)
+
     //app.io.sockets.emit('news', datos);
 }
 
 
-function convertirXML(nombreArchivo, res) {
+function convertirXML(nombreArchivo) {
     const file = require("fs");
     const xml2js = require("xml2js");
-
+    const nombreArchivoFinal = nombreArchivo + ".json"
     const parser = new xml2js.Parser();
 
     file.readFile(nombreArchivo, (err, buffer) => {
 
         parser.parseString(buffer, (err, result) => {
 
-            res.status(202).end();
-            
             traductor(result).then((datos) => {
-
-                agregaDatabase(JSON.stringify(datos))
+                file.writeFile(nombreArchivoFinal, JSON.stringify(datos), (err) => {
+                    if (err) throw err;
+                });
+                //agregaDatabase(JSON.stringify(datos))
+                //Eliminar el archivo original
                 file.unlink(nombreArchivo)
-
             })
 
         })
 
     });
+    return nombreArchivoFinal
 }
 
-function convertirCSV(nombreArchivo, res) {
+function convertirCSV(nombreArchivo) {
     const csvtojson = require("csvtojson");
     const file = require("fs");
-
+    const nombreArchivoFinal = nombreArchivo + ".json"
     var result = [];
 
     csvtojson().fromFile(nombreArchivo).on('json', (jsonObj) => {
@@ -51,22 +52,23 @@ function convertirCSV(nombreArchivo, res) {
 
     }).on('done', () => {
 
-        res.status(202).end();
-
         traductor(result).then((datos) => {
-
-            agregaDatabase(JSON.stringify(datos))
+            file.writeFile(nombreArchivoFinal, JSON.stringify(datos), (err) => {
+                if (err) throw err;
+            });
+            //agregaDatabase(JSON.stringify(datos))
+            //Eliminar el archivo original
             file.unlink(nombreArchivo)
 
         })
     })
-
+    return nombreArchivoFinal
 }
 
-function convertirPdf(nombreArchivo, res) {
+function convertirPdf(nombreArchivo) {
     const pdf2table = require("pdf2table");
     const file = require("fs");
-
+    const nombreArchivoFinal = nombreArchivo + ".json"
     file.readFile(nombreArchivo, function (err, buffer) {
 
         if (err) return console.log(err);
@@ -76,24 +78,29 @@ function convertirPdf(nombreArchivo, res) {
                 return console.log(err);
             }
 
-            res.status(202).end();
-
             traductor(result).then((datos) => {
-                agregaDatabase(JSON.stringify(datos))
+
+                file.writeFile(nombreArchivoFinal, JSON.stringify(datos), (err) => {
+                    if (err) throw err;
+                });
+                //agregaDatabase(JSON.stringify(datos))
+                //Eliminar el archivo original
                 file.unlink(nombreArchivo)
 
             })
 
         });
     });
+
+    return nombreArchivoFinal
 }
 
 
 
-function convertirXls(nombreArchivo, res) {
+function convertirXls(nombreArchivo) {
     const node_xj = require("xls-to-json");
     const file = require("fs");
-
+    const nombreArchivoFinal = nombreArchivo + ".json"
     node_xj({
         input: nombreArchivo,
         output: null
@@ -101,20 +108,28 @@ function convertirXls(nombreArchivo, res) {
         if (err) {
             console.error(err);
         } else {
-            res.status(202).end();
+            
             traductor(result).then((datos) => {
-                agregaDatabase(JSON.stringify(datos))
+                file.writeFile(nombreArchivoFinal, JSON.stringify(datos), (err) => {
+                    if (err) throw err;
+                });
+                //agregaDatabase(JSON.stringify(datos))
+                //Eliminar el archivo original
                 file.unlink(nombreArchivo)
             })
         }
     });
 
+    return nombreArchivoFinal
+
 }
 
-function convertirXLSX(nombreArchivo, res) {
+function convertirXLSX(nombreArchivo) {
 
     const xlscToJson = require("xlsx-to-json");
     const file = require("fs");
+
+    const nombreArchivoFinal = nombreArchivo + ".json"
 
     xlscToJson({
         input: nombreArchivo,
@@ -123,14 +138,22 @@ function convertirXLSX(nombreArchivo, res) {
         if (err) {
             console.error(err);
         } else {
-            res.status(202).end();
+            
             traductor(result).then((datos) => {
-                agregaDatabase(JSON.stringify(datos))
-                //Eliminar el ultimo archivo
+
+
+                file.writeFile(nombreArchivoFinal, JSON.stringify(datos), (err) => {
+                    if (err) throw err;
+                });
+                //agregaDatabase(JSON.stringify(datos))
+                //Eliminar el archivo original
                 file.unlink(nombreArchivo)
             })
         }
     });
+
+    return nombreArchivoFinal
+
 }
 
 module.exports = {

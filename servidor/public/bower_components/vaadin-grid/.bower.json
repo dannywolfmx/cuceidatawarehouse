@@ -27,27 +27,46 @@
     "package.json",
     "wct.conf.js"
   ],
-  "dependencies": {
-    "polymer": "polymer/polymer#^1.1.1"
-  },
   "devDependencies": {
-    "web-component-tester": "4.0.3",
-    "iron-test-helpers": "polymerelements/iron-test-helpers#~1.0.6",
-    "test-fixture": "polymerelements/test-fixture#~1.0.1",
-    "iron-component-page": "polymerelements/iron-component-page#~1.1.0",
-    "elements-demo-resources": "vaadin/elements-demo-resources#master",
-    "iron-demo-helpers": "polymerelements/iron-demo-helpers#^1.0.0"
+    "web-component-tester": "^4.3.1",
+    "iron-test-helpers": "^1.2.5",
+    "paper-input": "^1.1.17",
+    "paper-checkbox": "^1.4.0",
+    "iron-demo-helpers": "^1.2.5",
+    "iron-flex-layout": "^1.3.1",
+    "iron-image": "^1.2.5",
+    "paper-menu": "^1.2.2",
+    "paper-menu-button": "^1.5.1",
+    "paper-icon-button": "^1.1.2",
+    "paper-item": "^1.2.1",
+    "paper-slider": "^1.0.12",
+    "app-layout": "polymerelements/app-layout#^0.10.2",
+    "iron-icons": "PolymerElements/iron-icons#^1.2.0",
+    "iron-media-query": "^1.0.8",
+    "paper-button": "^1.0.14",
+    "iron-icon": "PolymerElements/iron-icon#^1.0.12",
+    "paper-styles": "PolymerElements/paper-styles#^1.1.5",
+    "iron-component-page": "^1.1.7",
+    "elements-demo-resources": "*",
+    "vaadin-combo-box": "^1.2.0",
+    "iron-ajax": "PolymerElements/iron-ajax#^1.4.3"
+  },
+  "dependencies": {
+    "polymer": "^1.6.1",
+    "iron-resizable-behavior": "PolymerElements/iron-resizable-behavior#^1.0.5",
+    "iron-scroll-target-behavior": "PolymerElements/iron-scroll-target-behavior#^1.1.0",
+    "iron-a11y-keys-behavior": "^1.1.9",
+    "iron-a11y-announcer": "^1.0.5"
   },
   "homepage": "https://github.com/vaadin/vaadin-grid",
-  "version": "1.2.2",
-  "_release": "1.2.2",
+  "version": "2.0.1",
+  "_release": "2.0.1",
   "_resolution": {
     "type": "version",
-    "tag": "v1.2.2",
-    "commit": "9efb76947e24e46bc404370925eb9e63f9bb0519"
+    "tag": "v2.0.1",
+    "commit": "b18df16ab518c233d970ed9eb104ec0faacee087"
   },
   "_source": "https://github.com/vaadin/vaadin-grid.git",
-  "_target": "^1.2.2",
-  "_originalSource": "vaadin-grid",
-  "_direct": true
+  "_target": "^2.0.1",
+  "_originalSource": "vaadin/vaadin-grid"
 }

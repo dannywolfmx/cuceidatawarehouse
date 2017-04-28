@@ -11,18 +11,21 @@
 
     <style>
         paper-card {
-            vertical-align: top;
+            display: block;
+            margin: 0;
             --paper-card-header: {
-                background: #2196F3;
+                background: #333333;
             }
+            
             --paper-card-header-text: {
                 font-weight: bold;
                 text-align: center;
-                color: white;
+                color: white
             }
         }
         
         .card-content {
+            padding: 16px;
             min-height: 260px;
         }
         
@@ -36,7 +39,7 @@
             margin: auto;
             margin-top: 16px;
             color: white;
-            background: #2196F3;
+            background: #396;
             font-weight: bold;
         }
     </style>
@@ -73,9 +76,8 @@
 
             </div>
             <div class="card-actions">
-
+                
                 <paper-button on-click="enviar" raised>Enviar</paper-button>
-
 
             </div>
         </paper-card>

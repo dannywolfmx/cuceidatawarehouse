@@ -11,7 +11,9 @@ const api = express.Router();
 
 api.get('/', (req, res) => { res.sendFile("./index.html") })
 
-api.post('/upload', auth,archivoControlador.lectoraDeArchivos)
+api.post('/archivo', auth,archivoControlador.guardarArchivo)
+api.post('/eliminararchivo',auth,archivoControlador.eliminarArchivo)
+api.post('/damearchivo',auth,archivoControlador.dameArchivo)
 
 //Api de usuarios
 api.post("/signup",authControll.signUp)

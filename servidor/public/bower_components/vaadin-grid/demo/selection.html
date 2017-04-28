@@ -6,219 +6,362 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
-  <title>vaadin-grid – Data Sources</title>
+  <title>vaadin-grid – Selection</title>
 
-  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../../webcomponentsjs/webcomponents-lite.min.js"></script>
+
+  <link rel="import" href="../../paper-checkbox/paper-checkbox.html">
+  <link rel="import" href="../vaadin-grid-selection-column.html">
+
 
   <link rel="import" href="common.html">
 </head>
 
 <body unresolved>
-
   <div class="vertical-section-container centered">
+    <demo-navigation></demo-navigation>
 
-    <demo-navigation class="vertical-section"></demo-navigation>
+    <h3>Selection using Active Item</h3>
+    <p>
+      When a row is clicked, the item object from that row is assigned to <code>activeItem</code>.
+    </p>
+    <p>
+      To select items on click, <code>activeItem</code> can be added
+      to the <code>selectedItems</code> array. You can also call
+      <code>selectItem(item)</code> or <code>deselectItem(item)</code> in order
+      to select or deselect the grid item.
+    </p>
+    <p>
+      In the example below, the <code>selectedItems</code> array is replaced
+      whenever <code>activeItem</code> changes, making single-item selection.
+    </p>
+    <demo-snippet>
+      <template>
+        <x-selection></x-selection>
+        <dom-module id="x-selection">
+          <template>
+            <x-data-provider data-provider="{{dataProvider}}"></x-data-provider>
 
-    <section>
-      <h3>Selecting Rows</h3>
-      <demo-snippet>
-        <template>
-          <vaadin-grid id="grid-select-rows">
-            <table>
-              <colgroup>
-                <col>
-                <col>
-                <col>
-              </colgroup>
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Value</th>
-                  <th>Progress</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>Project A</td>
-                  <td>123</td>
-                  <td>0.8</td>
-                </tr>
-                <tr>
-                  <td>Project B</td>
-                  <td>456</td>
-                  <td>0.9</td>
-                </tr>
-              </tbody>
-            </table>
-          </vaadin-grid>
+            <vaadin-grid aria-label="Selection using Active Item Example" id="grid" data-provider="[[dataProvider]]" active-item="{{activeItem}}" size="200">
+
+              <vaadin-grid-column width="50px" flex-grow="0">
+                <template class="header">#</template>
+                <template>[[index]]</template>
+              </vaadin-grid-column>
+
+              <vaadin-grid-column>
+                <template class="header">First Name</template>
+                <template>[[item.name.first]]</template>
+              </vaadin-grid-column>
+
+              <vaadin-grid-column>
+                <template class="header">Last Name</template>
+                <template>[[item.name.last]]</template>
+              </vaadin-grid-column>
+
+            </vaadin-grid>
+          </template>
           <script>
-          var grid = document.getElementById('grid-select-rows');
-          grid.selection.deselect(0);
-          grid.selection.select(1);
-          </script>
-        </template>
-      </demo-snippet>
-    </section>
-
-    <section>
-      <h3>Selection Modes</h3>
-      <demo-snippet>
-        <template>
-          <x-grid-select-modes></x-grid-select-modes>
-
-          <dom-module id="x-grid-select-modes">
-            <template>
-              <select id="select" on-change="_onModeChanged">
-                <option value="single">single</option>
-                <option value="multi">multi</option>
-                <option value="all">all</option>
-                <option value="disabled">disabled</option>
-              </select>
-              <vaadin-grid id="grid">
-                <table>
-                  <colgroup>
-                    <col>
-                    <col>
-                    <col>
-                  </colgroup>
-                  <thead>
-                    <tr>
-                      <th>Name</th>
-                      <th>Surname</th>
-                      <th>Activity</th>
-                    </tr>
-                  </thead>
-                </table>
-              </vaadin-grid>
-            </template>
-            <script>
+            addEventListener('WebComponentsReady', function() {
               Polymer({
-                is: 'x-grid-select-modes',
-                ready: function() {
-                  this.$.grid.items = window.employees;
-                  this.$.grid.selection.mode = this.$.select.value = 'multi';
+                is: 'x-selection',
+
+                properties: {
+                  activeItem: {
+                    observer: '_activeItemChanged'
+                  }
                 },
-                _onModeChanged: function() {
-                  this.$.grid.selection.mode = this.$.select.value;
+
+                _activeItemChanged: function(item) {
+                  this.$.grid.selectedItems = item ? [item] : [];
                 }
               });
-            </script>
-          </dom-module>
-        </template>
-      </demo-snippet>
-    </section>
-
-    <section>
-      <h3>Processing the selections as arrays</h3>
-      <demo-snippet>
-        <template>
-
-          <vaadin-grid id="grid-sel-arrays" selection-mode="multi">
-            <table>
-              <colgroup>
-                <col>
-                <col>
-                <col>
-              </colgroup>
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Surname</th>
-                  <th>Activity</th>
-                </tr>
-              </thead>
-            </table>
-          </vaadin-grid>
-          <script>
-            var grid = document.getElementById('grid-sel-arrays');
-            grid.items = window.employees;
-
-            // Log the selections / deselection to console on select event
-            grid.addEventListener('selected-items-changed', function() {
-              console.log('Selected: ' + this.selection.selected());
-              console.log('Deselected: ' + this.selection.deselected());
-            }.bind(grid));
+            });
           </script>
-        </template>
-      </demo-snippet>
+        </dom-module>
+      </template>
+    </demo-snippet>
 
-    </section>
+    <h3>Selection using Templates</h3>
+    <p>
+      In addition to modifying selection using <code>selectedItems</code> property
+      or <code>selectItem(item)</code> and <code>deselectItem(item)</code> methods,
+      the template variable <code>{{selected}}</code> can also be used.
+    </p>
+    <demo-snippet>
+      <template>
+        <template is="dom-bind">
+          <x-data-provider data-provider="{{dataProvider}}"></x-data-provider>
 
-    <section>
-      <h3>Iterating the selections</h3>
-      <demo-snippet>
-        <template>
+          <vaadin-grid aria-label="Selection using Templates Example" data-provider="[[dataProvider]]" size="200">
 
-          <vaadin-grid id="grid-sel-iter" selection-mode="multi">
-            <table>
-              <colgroup>
-                <col>
-                <col>
-                <col>
-              </colgroup>
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Surname</th>
-                  <th>Activity</th>
-                </tr>
-              </thead>
-            </table>
+            <vaadin-grid-column width="50px" flex-grow="0">
+              <template class="header">#</template>
+              <template>[[index]]</template>
+            </vaadin-grid-column>
+
+            <vaadin-grid-column>
+              <template class="header">First Name</template>
+              <template>[[item.name.first]]</template>
+            </vaadin-grid-column>
+
+            <vaadin-grid-column>
+              <template class="header">Last Name</template>
+              <template>[[item.name.last]]</template>
+            </vaadin-grid-column>
+
+            <vaadin-grid-column>
+              <template>
+                <paper-checkbox aria-label="Select Row" checked="{{selected}}">Selected</paper-checkb>
+              </template>
+            </vaadin-grid-column>
+
           </vaadin-grid>
-          <script>
-            var grid = document.getElementById('grid-sel-iter');
-            grid.items = window.employees;
-
-            // Log selected designers list on select event
-            grid.addEventListener('selected-items-changed', function() {
-              console.log('Selected designers:');
-              this.selection.selected(function(index) {
-                var data = window.employees[index];
-                if (data[2] === 'Design') {
-                  console.log('- ' + data[0] + ' ' + data[1]);
-                }
-              });
-            }.bind(grid));
-          </script>
         </template>
-      </demo-snippet>
+      </template>
+    </demo-snippet>
 
-    </section>
+    <h3>Multi-Selection Column</h3>
+    <p>
+      <code>&lt;vaadin-grid&gt;</code> ships with a helper element <code>&lt;vaadin-grid-selection-column&gt;</code>
+      which provides a checkboxes bound to selection. It also comes with a "select all"
+      checkbox for the header.
+    </p>
+    <p>
+      <b>Hint: </b><code>auto-select</code> can be set to enable selecting rows on click.
+    </p>
+    <p>
+      <b>Note: This is a opt-in feature so <code>vaadin-grid-selection-column.html</code> needs
+      to be explicitly imported.</b>
+    </p>
+    <demo-snippet>
+      <template>
+        <template is="dom-bind">
 
-    <section>
-      <h3>Processing selections in batches</h3>
-      <demo-snippet>
-        <template>
-          <vaadin-grid id="grid-batch" selection-mode="multi">
-            <table>
-              <colgroup>
-                <col>
-                <col>
-                <col>
-              </colgroup>
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Surname</th>
-                  <th>Activity</th>
-                </tr>
-              </thead>
-            </table>
+          <!-- Import vaadin-grid-selection-column.html (typically placed inside the <head> container) -->
+          <link rel="import" href="../vaadin-grid-selection-column.html">
+
+          <x-array-data-provider items="{{items}}"></x-array-data-provider>
+
+          <vaadin-grid aria-label="Multi-Selection Example" items="[[items]]">
+            <vaadin-grid-selection-column auto-select>
+            </vaadin-grid-selection-column>
+
+            <vaadin-grid-column width="50px" flex-grow="0">
+              <template class="header">#</template>
+              <template>[[index]]</template>
+            </vaadin-grid-column>
+
+            <vaadin-grid-column>
+              <template class="header">First Name</template>
+              <template>[[item.name.first]]</template>
+            </vaadin-grid-column>
+
+            <vaadin-grid-column>
+              <template class="header">Last Name</template>
+              <template>[[item.name.last]]</template>
+            </vaadin-grid-column>
+
           </vaadin-grid>
-          <script>
-            var grid = document.getElementById('grid-batch');
-            grid.items = window.employees;
+        </template>
+      </template>
+    </demo-snippet>
 
-            // Log selected indexes in batches of 5
-            grid.addEventListener('selected-items-changed', function() {
-              for (var i = 0; i < this.selection.size; i += 5) {
-                console.log(this.selection.selected(undefined, i, i + 4));
+
+
+    <h3>Custom Select All with Data Provider</h3>
+    <p>
+      When dealing with remote data, "selecting all" can be tricky since pushing
+      every item to <code>selectedItem</code> would require fetching all of the items.
+    </p>
+    <p>
+      In this example, a custom selection state is used to provide a "select all"
+      functionality without having to fetch all of the items.
+    </p>
+    <demo-snippet>
+      <template>
+        <dataprovider-select-all></dataprovider-select-all>
+        <dom-module id="dataprovider-select-all">
+          <template>
+            <style is="custom-style">
+              #grid[inverted] {
+                --vaadin-grid-body-cell: {
+                  background-color: var(--paper-grey-100);
+                };
+                --vaadin-grid-body-row-selected-cell: {
+                  background-color: var(--primary-background-color);
+                };
               }
-            }.bind(grid));
+            </style>
+            <x-data-provider data-provider="{{dataProvider}}"></x-data-provider>
+
+            <vaadin-grid  aria-label="Select All with Data Example" id="grid" data-provider="[[dataProvider]]" inverted$="[[inverted]]" size="200">
+
+              <vaadin-grid-column width="40px" flex-grow="0" >
+                <template class="header">
+                  <input aria-label="Select All" type="checkbox" on-click="_invert" checked="[[_isChecked(inverted, indeterminate)]]" indeterminate="[[indeterminate]]"/>
+                </template>
+                <template>
+                  <input aria-label="Select Row" type="checkbox" on-change="_selectItem" checked="[[_isSelected(inverted, selected)]]"/>
+                </template>
+              </vaadin-grid-column>
+
+              <vaadin-grid-column>
+                <template class="header">First Name</template>
+                <template>[[item.name.first]]</template>
+              </vaadin-grid-column>
+
+              <vaadin-grid-column>
+                <template class="header">Last Name</template>
+                <template>[[item.name.last]]</template>
+              </vaadin-grid-column>
+
+            </vaadin-grid>
+          </template>
+          <script>
+            addEventListener('WebComponentsReady', function() {
+              Polymer({
+                is: 'dataprovider-select-all',
+
+                properties: {
+                  inverted: {
+                    type: Boolean,
+                    value: false
+                  },
+                  indeterminate: {
+                    type: Boolean,
+                    value: false
+                  }
+                },
+
+                observers: ['_resetSelection(inverted)'],
+
+                _resetSelection: function(inverted) {
+                  this.$.grid.selectedItems = [];
+                  this.updateStyles();
+                  this.indeterminate = false;
+                },
+
+                _invert: function(e) {
+                  this.inverted = !this.inverted;
+                },
+
+                // iOS needs indeterminated + checked at the same time
+                _isChecked: function(inverted, indeterminate) {
+                  return indeterminate || inverted;
+                },
+
+                _selectItem: function(e) {
+                  if (e.target.checked === this.inverted) {
+                    this.$.grid.deselectItem(e.model.item);
+                  } else {
+                    this.$.grid.selectItem(e.model.item);
+                  }
+                  this.indeterminate = this.$.grid.selectedItems.length > 0;
+                },
+
+                _isSelected: function(inverted, selected) {
+                  return inverted != selected;
+                }
+              });
+            });
           </script>
-        </template>
-      </demo-snippet>
-    </section>
+        </dom-module>
+      </template>
+    </demo-snippet>
+
+    <h3>Space Key Action and Click to Activate</h3>
+    <p>
+      When a focused cell has child elements, the <kbd>Space</kbd> key clicks
+      the first child element.
+    </p>
+    <p>
+      Clicking a child element inside a cell activates the item, unless either:
+    </p>
+    <ul>
+      <li>
+        The clicked child is a focusable element, for example,
+        an <code>&lt;input&gt;</code>, a <code>&lt;button&gt;</code>, or has
+        the <code>tabindex</code> attribute.
+      </li>
+      <li>The clicked child prevents default action of the <code>click</code> event.</li>
+      <li>The clicked child stops propagation of the <code>click</code> event.</li>
+    </ul>
+    <p>
+      Try clicking and pressing <kbd>Space</kbd> for the body cell contents
+      in the example below.
+    </p>
+    <demo-snippet>
+      <template>
+        <x-space-action></x-space-action>
+        <dom-module id="x-space-action">
+          <template>
+            <x-data-provider data-provider="{{dataProvider}}"></x-data-provider>
+
+            <vaadin-grid aria-label="Space Key Action Example" id="grid" data-provider="[[dataProvider]]" active-item="{{activeItem}}" size="200">
+
+              <vaadin-grid-column>
+                <template class="header">Only text contents</template>
+                <template>
+                  Space activates
+                </template>
+              </vaadin-grid-column>
+
+              <vaadin-grid-column>
+                <template class="header">Button first child</template>
+                <template>
+                  <button on-click="_alert">Button</button>
+                  Space does not activate
+                </template>
+              </vaadin-grid-column>
+
+              <vaadin-grid-column>
+                <template class="header">Div first child</template>
+                <template>
+                  <div on-click="_alert">Div</div>
+                  Space activates
+                </template>
+              </vaadin-grid-column>
+
+              <vaadin-grid-column>
+                <template class="header">preventDefault for click</template>
+                <template>
+                  <div on-click="_alertAndPreventDefault">Div with preventDefault</div>
+                  Space does not activate
+                </template>
+              </vaadin-grid-column>
+
+            </vaadin-grid>
+          </template>
+          <script>
+            addEventListener('WebComponentsReady', function() {
+              Polymer({
+                is: 'x-space-action',
+
+                properties: {
+                  activeItem: {
+                    observer: '_activeItemChanged'
+                  }
+                },
+
+                _alert: function(e) {
+                  alert(e.target.textContent + ' clicked');
+                },
+
+                _alertAndPreventDefault: function(e) {
+                  e.preventDefault();
+                  this._alert(e);
+                },
+
+                _activeItemChanged: function(item) {
+                  this.$.grid.selectedItems = item ? [item] : [];
+                }
+              });
+            });
+          </script>
+        </dom-module>
+      </template>
+    </demo-snippet>
 
   </div>
 </body>
