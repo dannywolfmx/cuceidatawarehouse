@@ -26,14 +26,13 @@ function convertirXML(nombreArchivo) {
 
         parser.parseString(buffer, (err, result) => {
 
-            traductor(result).then((datos) => {
-                file.writeFile(nombreArchivoFinal, JSON.stringify(datos), (err) => {
-                    if (err) throw err;
-                });
-                //agregaDatabase(JSON.stringify(datos))
-                //Eliminar el archivo original
-                file.unlink(nombreArchivo)
-            })
+            file.writeFile(nombreArchivoFinal, JSON.stringify(result), (err) => {
+                if (err) {
+                    throw err;
+                } else {
+                    file.unlink(nombreArchivo)
+                }
+            });
 
         })
 
@@ -52,15 +51,13 @@ function convertirCSV(nombreArchivo) {
 
     }).on('done', () => {
 
-        traductor(result).then((datos) => {
-            file.writeFile(nombreArchivoFinal, JSON.stringify(datos), (err) => {
-                if (err) throw err;
-            });
-            //agregaDatabase(JSON.stringify(datos))
-            //Eliminar el archivo original
-            file.unlink(nombreArchivo)
-
-        })
+        file.writeFile(nombreArchivoFinal, JSON.stringify(result), (err) => {
+            if (err) {
+                throw err;
+            } else {
+                file.unlink(nombreArchivo)
+            }
+        });
     })
     return nombreArchivoFinal
 }
@@ -77,18 +74,13 @@ function convertirPdf(nombreArchivo) {
             if (err) {
                 return console.log(err);
             }
-
-            traductor(result).then((datos) => {
-
-                file.writeFile(nombreArchivoFinal, JSON.stringify(datos), (err) => {
-                    if (err) throw err;
-                });
-                //agregaDatabase(JSON.stringify(datos))
-                //Eliminar el archivo original
-                file.unlink(nombreArchivo)
-
-            })
-
+            file.writeFile(nombreArchivoFinal, JSON.stringify(result), (err) => {
+                if (err) {
+                    throw err;
+                } else {
+                    file.unlink(nombreArchivo)
+                }
+            });
         });
     });
 
