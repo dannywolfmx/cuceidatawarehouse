@@ -127,14 +127,10 @@ function traduccionArchivo(req, res) {
         return res.status(400).send("No se encontro nombre del archivo");
     }
 
-
     traductor(result).then((datos) => {
-
         agregaDatabase(JSON.stringify(datos))
         file.unlink(nombreArchivo)
-
     })
-
 }
 
 module.exports = {

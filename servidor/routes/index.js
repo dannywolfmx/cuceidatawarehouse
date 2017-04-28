@@ -1,5 +1,6 @@
 'use strict'
 const archivoControlador = require("../controllers/archivosController");
+const traductorControlador = require("../controllers/traductorController");
 const authControll = require("../controllers/authController")
 
 const auth = require("../middleware/auth")
@@ -14,6 +15,8 @@ api.get('/', (req, res) => { res.sendFile("./index.html") })
 api.post('/archivo', auth,archivoControlador.guardarArchivo)
 api.post('/eliminararchivo',auth,archivoControlador.eliminarArchivo)
 api.post('/damearchivo',auth,archivoControlador.dameArchivo)
+
+api.post('/traductorjson',auth,traductorControlador.traductorJSON)
 
 //Api de usuarios
 api.post("/signup",authControll.signUp)

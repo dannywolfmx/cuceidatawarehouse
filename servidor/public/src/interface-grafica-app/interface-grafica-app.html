@@ -112,6 +112,21 @@
       paper-toolbar {
         --paper-toolbar-background: #333333;
       }
+      
+      .direcciones {
+        padding: 16px;
+        border-bottom: 3px solid #396;
+      }
+      
+      #lista-archivos {
+        padding: 0;
+        --paper-card-header: {}
+        --paper-card-header-text: {
+          color: #EEEEEE;
+          text-align: center;
+          font-weight: bold;
+        }
+      }
     </style>
 
 
@@ -119,8 +134,9 @@
     <iron-localstorage name="usuario" value="{{usuario}}"></iron-localstorage>
 
     <iron-ajax id="eliminararchivo" url="/eliminararchivo" method="POST" handle-as="json" on-response="actualizarArchivos"></iron-ajax>
-
     <iron-ajax id="seleccionararchivo" url="/damearchivo" method="POST" handle-as="json" on-response="muestraarchivo"></iron-ajax>
+    <iron-ajax id="traducirjson" url="/traductorjson" method="POST" handle-as="json" on-response="agregatraduccion"></iron-ajax>
+
     <paper-drawer-panel hidden$="[[!uregistrado]]">
       <paper-header-panel drawer>
         <paper-toolbar>
@@ -147,15 +163,15 @@
 
         <paper-card heading="Lista archivos disponibles" id="lista-archivos" image="" elevation="1" animated-shadow="false">
           <template is="dom-repeat" items="[[usuario.archivos]]">
-            <paper-item>
-              <paper-icon-button icon="find-in-page" on-tap="seleccionaarchivo"></paper-icon-button>
-              <paper-icon-button icon="clear" on-tap="eliminarArchivo"></paper-icon-button>
+            <paper-item class="direcciones">
+              <paper-icon-button icon="view-list" on-tap="seleccionaarchivo"></paper-icon-button>
+              <paper-icon-button icon="delete" style="color: #E57373;" on-tap="eliminarArchivo"></paper-icon-button>
               [[item.direccion]]
             </paper-item>
           </template>
         </paper-card>
 
-
+        <paper-icon-button icon="g-translate" style="color: blue;" on-tap="traducirArchivo"></paper-icon-button>
 
         <!-- The array is set as the <vaadin-grid>'s "items" property -->
         <vaadin-grid aria-label="Basic Binding Example" items="[[datosTabla]]">
@@ -278,8 +294,11 @@
         columnas: {
           type: Array,
           value: []
-        }
-        ,
+        },
+        nombrearchivo: {
+          type: String,
+          value: ""
+        },
         i18n: {
           type: Object,
           value: {
@@ -383,21 +402,31 @@
         this.usuario = e.detail.response.usuario;
       },
       seleccionaarchivo: function (idArchivo) {
+        let direccion = idArchivo.model.__data__.item.direccion;
         this.$.seleccionararchivo.headers = {
           Authorization: "Bear " + this.token,
           direccion: idArchivo.model.__data__.item.direccion
         }
         this.$.seleccionararchivo.generateRequest();
-
+        this.nombrearchivo = direccion;
       },
       muestraarchivo: function (e) {
         let contenido = e.detail.response
         console.log(contenido[0])
         this.columnas = Object.keys(contenido[0]);
         this.datosTabla = contenido;
+      },
+      traducirArchivo: function () {
+        console.log()
+        this.$.traducirjson.headers = {
+          Authorization: "Bear " + this.token,
+          nombrearchivo:this.nombrearchivo
+        }
+        this.$.traducirjson.generateRequest()
+      },
+      agregatraduccion:function(e){
+        this.datosTabla = e.detail.response;
       }
-
-
     });
   </script>
 </dom-module>
