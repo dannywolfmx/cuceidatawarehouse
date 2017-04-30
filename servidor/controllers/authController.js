@@ -8,8 +8,10 @@ function signUp(req,res){
     const usuario = new Usuario({
         correo:req.body.correo,
         nombre:req.body.nombre,
-        password:req.body.password
+        password:req.body.password,
+        rol:req.body.rol
     })
+    console.log(req.body.rol)
 
     usuario.save((err)=>{
         if(err){

@@ -4,13 +4,12 @@
 <link rel="import" href="">
 
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<!--<link rel="import" href="../../bower_components/iron-flex-layout/classes/iron-flex-layout.html">-->
 <link rel="import" href="../../bower_components/paper-drawer-panel/paper-drawer-panel.html">
 <link rel="import" href="../../bower_components/paper-menu/paper-menu.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../../bower_components/paper-tabs/paper-tabs.html">
 <link rel="import" href="../../bower_components/paper-tabs/paper-tab.html">
-<link rel="import" href="../../bower_components/neon-animation/neon-animation.html">
-<link rel="import" href="../../bower_components/neon-animation/neon-animated-pages.html">
 <link rel="import" href="../../bower_components/iron-localstorage/iron-localstorage.html">
 <link rel="import" href="../../bower_components/paper-toolbar/paper-toolbar.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
@@ -18,19 +17,38 @@
 <link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
 <link rel="import" href="../../bower_components/vaadin-grid/vaadin-grid.html">
 <link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="../../bower_components/paper-scroll-header-panel/paper-scroll-header-panel.html">
+<link rel="import" href="../../bower_components/neon-animation/neon-animation.html">
+<link rel="import" href="../../bower_components/neon-animation/neon-animations.html">
+<link rel="import" href="../../bower_components/neon-animation/neon-animatable.html">
+<link rel="import" href="../../bower_components/neon-animation/neon-animated-pages.html">
+<link rel="import" href="../../bower_components/neon-animation/neon-animatable-behavior.html">
+<link rel="import" href="../../bower_components/neon-animation/neon-shared-element-animatable-behavior.html">
+<link rel="import" href="../../bower_components/neon-animation/neon-animation-runner-behavior.html">
+<link rel="import" href="../../bower_components/neon-animation/animations/slide-from-right-animation.html">
+<link rel="import" href="../../bower_components/neon-animation/animations/slide-right-animation.html">
+
+
+
+<link rel="import" href="../../bower_components/neon-animation/animations/cascaded-animation.html">
+
 
 
 <link rel="import" href="../login-component/login-panel.html">
 <link rel="import" href="../login-component/registro-panel.html">
-
-<script src="/socket.io/socket.io.js"></script>
+<link rel="import" href="../elemento-archivo/elemento-archivo.html">
 
 <dom-module id="interface-grafica-app">
   <template>
 
     <style is="custom-style">
        :host {
+         margin:0;
         display: block;
+        width: 100%;
+        height: 100%;
+        box-sizing: border-box;
       }
       
       paper-drawer-panel {
@@ -43,9 +61,7 @@
       #lista-archivos {
         background-color: #333333;
         display: block;
-        margin: 16px;
         padding: 16px;
-        max-width: 500px;
         --paper-card-header-text: {
           color: white;
         }
@@ -77,8 +93,7 @@
       
       #login-section {
         display: block;
-        margin: 0 auto;
-        max-width: 500px;
+        margin: 16px;
         --paper-card-content: {
           padding: 0;
         }
@@ -127,6 +142,13 @@
           font-weight: bold;
         }
       }
+      
+      neon-animated-pages {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        box-sizing: border-box;
+      }
     </style>
 
 
@@ -137,83 +159,121 @@
     <iron-ajax id="seleccionararchivo" url="/damearchivo" method="POST" handle-as="json" on-response="muestraarchivo"></iron-ajax>
     <iron-ajax id="traducirjson" url="/traductorjson" method="POST" handle-as="json" on-response="agregatraduccion"></iron-ajax>
 
-    <paper-drawer-panel hidden$="[[!uregistrado]]">
-      <paper-header-panel drawer>
-        <paper-toolbar>
 
-          <paper-icon-button icon="build"></paper-icon-button>
-          <div class="title">[[usuario.nombre]]</div>
+    <neon-animated-pages class="flex" selected="[[uregistrado]]" entry-animation="fade-in-animation" exit-animation="fade-out-animation">
 
-        </paper-toolbar>
-        <paper-menu>
-          <paper-item>Subir archivos</paper-item>
-        </paper-menu>
+      <neon-animatable>
+        <paper-drawer-panel>
+          <paper-header-panel drawer>
+            <paper-toolbar>
 
-      </paper-header-panel>
-      <paper-header-panel main>
-        <paper-toolbar>
-          <paper-icon-button icon="menu" on-tap="menuAction"></paper-icon-button>
-          <div class="title">Titulo</div>
-          <paper-icon-button icon="exit-to-app" on-tap="cerrarSecion"></paper-icon-button>
+              <paper-icon-button icon="build"></paper-icon-button>
+              <div class="title">[[usuario.rol]]</div>
 
-        </paper-toolbar>
+            </paper-toolbar>
+            <paper-menu>
+              <paper-item>Subir archivos</paper-item>
+            </paper-menu>
 
-        <vaadin-upload class="thick-border" i18n="[[i18n]]" on-upload-response="uploadresponse" on-upload-before="agregarheader"
-          id="fileupdate" name="sampleFile" target="/archivo" method="POST"></vaadin-upload>
+          </paper-header-panel>
+          <paper-scroll-header-panel main>
+            <paper-toolbar>
+              <paper-icon-button icon="menu" on-tap="menuAction"></paper-icon-button>
+              <div class="title">Titulo</div>
+              <paper-icon-button icon="exit-to-app" on-tap="cerrarSecion"></paper-icon-button>
 
-        <paper-card heading="Lista archivos disponibles" id="lista-archivos" image="" elevation="1" animated-shadow="false">
-          <template is="dom-repeat" items="[[usuario.archivos]]">
-            <paper-item class="direcciones">
-              <paper-icon-button icon="view-list" on-tap="seleccionaarchivo"></paper-icon-button>
-              <paper-icon-button icon="delete" style="color: #E57373;" on-tap="eliminarArchivo"></paper-icon-button>
-              [[item.direccion]]
-            </paper-item>
-          </template>
-        </paper-card>
+            </paper-toolbar>
 
-        <paper-icon-button icon="g-translate" style="color: blue;" on-tap="traducirArchivo"></paper-icon-button>
-
-        <!-- The array is set as the <vaadin-grid>'s "items" property -->
-        <vaadin-grid aria-label="Basic Binding Example" items="[[datosTabla]]">
-
-          <vaadin-grid-column width="50px" flex-grow="0">
-            <template class="header">#</template>
-            <template>[[index]]</template>
-            <!-- If necessary, the footer could be set using <template class="footer"> -->
-          </vaadin-grid-column>
+            <vaadin-upload class="thick-border" i18n="[[i18n]]" on-upload-response="uploadresponse" on-upload-before="agregarheader"
+              id="fileupdate" name="sampleFile" target="/archivo" method="POST"></vaadin-upload>
 
 
 
-          <template is="dom-repeat" items="[[columnas]]" as="columna">
+            <!-- The array is set as the <vaadin-grid>'s "items" property -->
+
+            <div>
+
+              <paper-card id="login-section" image="" elevation="1" animated-shadow="false">
+                <div class="card-content">
+
+                  <paper-tabs selected="{{datosGraficas}}">
+                    <paper-tab on-tap="prueba">Archivos</paper-tab>
+                    <paper-tab>Tabla</paper-tab>
+                    <paper-tab>Grafica</paper-tab>
+                  </paper-tabs>
+
+                  <neon-animated-pages class="flex" selected=[[datosGraficas]] entry-animation="fade-in-animation" exit-animation="fade-out-animation">
+
+                    <paper-card id="lista-archivos" image="" elevation="1" animated-shadow="false">
+                      <template is="dom-repeat" items="[[usuario.archivos]]" on-dom-change="_renderisarItems">
+                        <paper-item class="direcciones">
+                          <elemento-archivo>
+                            <paper-icon-button icon="view-list" on-tap="seleccionaarchivo"></paper-icon-button>
+                            <paper-icon-button icon="delete" style="color: #E57373;" on-tap="eliminarArchivo"></paper-icon-button>
+                            [[item.direccion]]
+                          </elemento-archivo>
+                        </paper-item>
+                      </template>
+                    </paper-card>
+                    <div>
+
+                      <paper-icon-button icon="g-translate" style="color: blue;" on-tap="traducirArchivo"></paper-icon-button>
+                      <vaadin-grid aria-label="Basic Binding Example" items="[[datosTabla]]">
+
+                        <vaadin-grid-column width="50px" flex-grow="0">
+                          <template class="header">#</template>
+                          <template>[[index]]</template>
+                          <!-- If necessary, the footer could be set using <template class="footer"> -->
+                        </vaadin-grid-column>
 
 
-            <vaadin-grid-column>
-              <template class="header">[[columna]]</template>
 
-              <template>[[get(columna,item)]]</template>
+                        <template is="dom-repeat" items="[[columnas]]" as="columna">
 
 
-            </vaadin-grid-column>
+                          <vaadin-grid-column>
+                            <template class="header">[[columna]]</template>
 
-          </template>
-
-
-        </vaadin-grid>
+                            <template>[[get(columna,item)]]</template>
 
 
+                          </vaadin-grid-column>
 
-        <div hidden$="[[]]">
+                        </template>
+
+
+                      </vaadin-grid>
+                    </div>
+                  </neon-animated-pages>
+
+                </div>
+
+              </paper-card>
+
+            </div>
+
+
+          </paper-scroll-header-panel>
+        </paper-drawer-panel>
+
+      </neon-animatable>
+
+      <neon-animatable>
+
+
+        <div>
 
           <paper-card id="login-section" image="" elevation="1" animated-shadow="false">
             <div class="card-content">
 
               <paper-tabs selected="{{loginPanel}}">
-                <paper-tab>Tabla</paper-tab>
-                <paper-tab>Grafica</paper-tab>
+                <paper-tab>Iniciar</paper-tab>
+                <paper-tab>Registrarse</paper-tab>
               </paper-tabs>
 
               <neon-animated-pages selected=[[loginPanel]]>
-
+                <login-panel usuario="{{usuario}}" token={{token}}></login-panel>
+                <registro-panel usuario="{{usuario}}" token={{token}}></registro-panel>
               </neon-animated-pages>
 
             </div>
@@ -222,35 +282,9 @@
 
         </div>
 
-
-      </paper-header-panel>
-    </paper-drawer-panel>
-
-
-
-    <div hidden$="[[uregistrado]]">
-
-      <paper-card id="login-section" image="" elevation="1" animated-shadow="false">
-        <div class="card-content">
-
-          <paper-tabs selected="{{loginPanel}}">
-            <paper-tab>Iniciar</paper-tab>
-            <paper-tab>Registrarse</paper-tab>
-          </paper-tabs>
-
-          <neon-animated-pages selected=[[loginPanel]]>
-            <login-panel usuario="{{usuario}}" token={{token}}></login-panel>
-            <registro-panel usuario="{{usuario}}" token={{token}}></registro-panel>
-          </neon-animated-pages>
-
-        </div>
-
-      </paper-card>
-
-    </div>
-
-
-
+      </neon-animatable>
+    </neon-animated-pages>
+    <paper-toast id="toast" text=""></paper-toast>
   </template>
 
   <script>
@@ -260,14 +294,42 @@
     Polymer({
 
       is: 'interface-grafica-app',
-
+      behaviors: [
+        Polymer.NeonAnimationRunnerBehavior,
+        Polymer.NeonSharedElementAnimatableBehavior,
+        Polymer.NeonAnimatableBehavior
+      ],
       properties: {
+        animationConfig: {
+
+          value: function () {
+            return {
+              'entry': {
+                name: 'fade-in-animation',
+                node: this,
+                nodeDelay: 0, // You can use this to delay animation between each node
+                timing: { duration: 2000 }
+              }
+              ,
+              'exit': [{
+                name: 'slide-left-animation',
+                node: this
+              }
+              ]
+            }
+          }
+        }
+        ,
         datos: {
           type: Array,
           value: []
         },
         loginPanel: {
           type: Boolean,
+          value: 0
+        },
+        datosGraficas: {
+          type: Number,
           value: 0
         },
         usuario: Object,
@@ -277,8 +339,8 @@
           observer: "registrado"
         },
         uregistrado: {
-          type: Boolean,
-          value: false
+          type: Number,
+          value: 1
         },
         listaarchivos: {
           type: Array,
@@ -286,10 +348,7 @@
         },
         datosTabla: {
           type: Array,
-          value: [
-            { a: "Hola" },
-            { a: "E" }
-          ]
+          value: []
         },
         columnas: {
           type: Array,
@@ -347,9 +406,11 @@
 
       },
       ready: function () {
-        this.columnas = Object.keys(this.datosTabla[0]);
+
+
       },
       attached: function () {
+
         self = this
 
         document.querySelector('vaadin-upload').addEventListener('upload-response', function (e) {
@@ -361,14 +422,20 @@
           //console.log(e.detail.xhr.response); 
           self.set("datos", e.detail.xhr.response)
         })
-        var socket = io.connect('http://localhost:3001');
-        socket.on('news', function (data) {
-          console.log(data);
-          self.set("datos", data)
-        });
+        /*        var socket = io.connect('http://localhost:3001');
+                socket.on('news', function (data) {
+                  console.log(data);
+                  self.set("datos", data)
+                });*/
+
+        this.playAnimation('entry');
       },
       registrado: function () {
-        this.set("uregistrado", (this.token.length > 0));
+        if ((this.token.length > 0)) {
+          this.set("uregistrado", 0);
+        } else {
+          this.set("uregistrado", 1);
+        }
       },
       agregarheader: function () {
         this.$.fileupdate.headers = {
@@ -378,17 +445,14 @@
       },
       uploadresponse: function (e) {
         let respuesta = JSON.parse(e.detail.xhr.response).usuario
-        console.log(respuesta)
         this.usuario = respuesta
       },
       cerrarSecion: function () {
         this.set("usuario", "")
         this.set("token", "");
       },
-      dameDatoColumna: function (columa, item) {
-        console.log(item)
-      },
       eliminarArchivo: function (idArchivo) {
+        console.log(idArchivo);
         this.$.eliminararchivo.headers = {
           Authorization: "Bear " + this.token,
           idusuario: this.usuario._id,
@@ -399,7 +463,7 @@
         this.$.eliminararchivo.generateRequest();
       },
       actualizarArchivos: function (e) {
-        this.usuario = e.detail.response.usuario;
+        this.set('usuario', e.detail.response.usuario)
       },
       seleccionaarchivo: function (idArchivo) {
         let direccion = idArchivo.model.__data__.item.direccion;
@@ -415,17 +479,36 @@
         console.log(contenido[0])
         this.columnas = Object.keys(contenido[0]);
         this.datosTabla = contenido;
+        this.datosGraficas = 1;
       },
       traducirArchivo: function () {
-        console.log()
-        this.$.traducirjson.headers = {
-          Authorization: "Bear " + this.token,
-          nombrearchivo:this.nombrearchivo
+        if (this.nombrearchivo === "") {
+          this.$.toast.close();
+
+          this.$.toast.text = "Despliega una archivo para traducirlo"
+
+          this.$.toast.open();
+        } else {
+          this.$.toast.close();
+          this.$.toast.text = "Traduciendo..."
+          this.$.toast.open();
+
+          this.$.traducirjson.headers = {
+            Authorization: "Bear " + this.token,
+            nombrearchivo: this.nombrearchivo
+          }
+
+          this.$.traducirjson.generateRequest()
+
         }
-        this.$.traducirjson.generateRequest()
       },
-      agregatraduccion:function(e){
+      agregatraduccion: function (e) {
+        this.$.toast.close();
         this.datosTabla = e.detail.response;
+
+        this.$.toast.text = "Traduccion lista"
+
+        this.$.toast.open();
       }
     });
   </script>

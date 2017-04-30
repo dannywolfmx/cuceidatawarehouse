@@ -13,6 +13,10 @@ const UsuarioSchema = Schema({
   password: {
     type: String
   },
+  rol:{
+    type:String
+  }
+  ,
   archivos: [{
     direccion: { type: String, require: true }
 

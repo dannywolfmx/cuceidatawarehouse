@@ -1,0 +1,62 @@
+<link rel="import" href="../../bower_components/neon-animation/neon-animation.html">
+<link rel="import" href="../../bower_components/neon-animation/neon-animations.html">
+<link rel="import" href="../../bower_components/neon-animation/neon-animatable.html">
+<link rel="import" href="../../bower_components/neon-animation/neon-animated-pages.html">
+<link rel="import" href="../../bower_components/neon-animation/neon-animatable-behavior.html">
+<link rel="import" href="../../bower_components/neon-animation/neon-shared-element-animatable-behavior.html">
+<link rel="import" href="../../bower_components/neon-animation/neon-animation-runner-behavior.html">
+<link rel="import" href="../../bower_components/neon-animation/animations/slide-from-right-animation.html">
+<link rel="import" href="../../bower_components/neon-animation/animations/slide-right-animation.html">
+
+<dom-module id="elemento-archivo">
+
+    <template>
+
+                <content></content>
+
+        </paper-card>
+
+    </template>
+
+    <script>
+        Polymer({
+            is: 'elemento-archivo',
+            behaviors: [
+                Polymer.NeonAnimationRunnerBehavior,
+                Polymer.NeonSharedElementAnimatableBehavior,
+                Polymer.NeonAnimatableBehavior
+            ],
+            properties: {
+                item: String,
+                animationConfig: {
+
+                    value: function () {
+                        return {
+                            'entry': {
+                                name: 'fade-in-animation',
+                                node: this,
+                                nodeDelay: 0, // You can use this to delay animation between each node
+                                timing: { duration: 1000 }
+                            },
+                            'exit': {
+                                name: 'fade-out-animation',
+                                node: this,
+                                nodeDelay: 0, // You can use this to delay animation between each node
+                                timing: { duration: 1000 }
+                            }
+                        }
+                    }
+                }
+            },
+            attached: function () {
+                
+                
+                this.playAnimation('entry');
+            },
+            detached: function () {
+                
+                this.playAnimation('exit');
+            }
+        })
+    </script>
+</dom-module>

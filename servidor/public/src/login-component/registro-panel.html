@@ -7,6 +7,9 @@
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/iron-form/iron-form.html">
 <link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+
 <dom-module id="registro-panel">
 
     <style>
@@ -16,7 +19,6 @@
             --paper-card-header: {
                 background: #333333;
             }
-            
             --paper-card-header-text: {
                 font-weight: bold;
                 text-align: center;
@@ -31,6 +33,9 @@
         
         iron-icon {
             padding-right: 6px;
+        }
+        paper-dropdown-menu{
+            display: block
         }
         
         paper-button {
@@ -71,12 +76,17 @@
 
                     </paper-input>
 
-
+                    <paper-dropdown-menu name="rol"label="Rol en el sistema">
+                        <paper-listbox class="dropdown-content" selected="1">
+                            <paper-item >Gerencial</paper-item>
+                            <paper-item >Administrador</paper-item>
+                        </paper-listbox>
+                    </paper-dropdown-menu>
                 </form>
 
             </div>
             <div class="card-actions">
-                
+
                 <paper-button on-click="enviar" raised>Enviar</paper-button>
 
             </div>
@@ -99,6 +109,7 @@
                 }
             },
             enviar: function () {
+                console.log(this.$.form.serialize())
                 this.$.form.submit()
             },
             respuesta: function (e) {

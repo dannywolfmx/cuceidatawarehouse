@@ -113,6 +113,7 @@ animations to be run when switching to or switching out of the page.
           node: selectedPage
         });
       } else {
+        console.log(selectedPage.getAnimationConfig)
         if (selectedPage.getAnimationConfig) {
           this.animationConfig.push({
             animatable: selectedPage,

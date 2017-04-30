@@ -1,20 +1,31 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
 
-    <title>interface-grafica</title>
-    <meta name="description" content="interface-grafica description">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
 
-    <!-- See https://goo.gl/OOhYW5 -->
-    <link rel="manifest" href="./manifest.json">
+  <title>interface-grafica</title>
+  <meta name="description" content="interface-grafica description">
 
-    <script src="./bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+  <!-- See https://goo.gl/OOhYW5 -->
+  <link rel="manifest" href="./manifest.json">
+  <style>
+    body{
+      margin:0px;
+    }
+  </style>
+  <script>
+  window.ShadyDOM = { force: true };
+  </script>
 
-    <link rel="import" href="./src/interface-grafica-app/interface-grafica-app.html">
-  </head>
-  <body>
-    <interface-grafica-app></interface-grafica-app>
-  </body>
+  <script src="./bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+<link rel="import" href="./bower_components/polymer/polymer.html">
+  <link rel="import" href="./src/interface-grafica-app/interface-grafica-app.html">
+</head>
+
+<body>
+  <interface-grafica-app></interface-grafica-app>
+</body>
+
 </html>
