@@ -40,7 +40,7 @@ mongoose.connect('mongodb://localhost:27017/datawarehouse', (err, red) => {
 
         //Ahora ponemos a la escucha nuestro servidor, una vez conectado a mongo
         server.listen(config.port, () => {
-            console.log('Express corriendo en 127.0.0.1:' + config.port);
+            console.log('Express corriendo en http://127.0.0.1:' + config.port);
             console.log("Express corriendo, para terminar preciona Ctrl-C");
         });
     }

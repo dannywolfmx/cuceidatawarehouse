@@ -12,10 +12,8 @@ function guardarArchivo(req, res) {
     if (!req.files) {
         return res.status(400).send("No se encontro archivo para subir");
     }
-    console.log(req.headers.nombreusuario)
     let archivo = req.files.file;
     let correoUsuario = req.headers.correousuario;
-    console.log(correoUsuario);
     let directorio = "upload/" + correoUsuario;
 
     if (!fs.existsSync(directorio)) {
@@ -32,7 +30,7 @@ function guardarArchivo(req, res) {
             return res.status(500).send(err)
         }
         switch (tipo) {
-            case TIPOS_ARCHIVOS.cvs:
+            case TIPOS_ARCHIVOS.csv:
                 archivoFinal = fileToJson.convertirCSV(nombreArchivo, res);
 
                 break;
@@ -51,7 +49,10 @@ function guardarArchivo(req, res) {
             case TIPOS_ARCHIVOS.xml:
                 archivoFinal = fileToJson.convertirXML(nombreArchivo, res);
                 break;
-            default: res.send("Tipo desconocido");
+            default:{
+                console.log("Tipo desconocido")
+              res.send("Tipo desconocido");  
+            } 
         }
         if (archivoFinal !== "") {
             guardarArchivoDeUsuario(archivoFinal, correoUsuario, res)

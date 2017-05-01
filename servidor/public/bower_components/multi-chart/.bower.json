@@ -1,0 +1,46 @@
+{
+  "name": "multi-chart",
+  "version": "0.7.3",
+  "description": "polymer building blocks elements for building charts and visualization (based on d3.js v4).",
+  "license": "MIT",
+  "authors": [
+    "christophe.geiser <christophe.geiser@e-smile.org>"
+  ],
+  "main": "multi-chart.html",
+  "repository": "https://github.com/polymerEl/multi-chart",
+  "keywords": [
+    "web-component",
+    "web-components",
+    "d3.js",
+    "charts",
+    "polymer",
+    "analytics",
+    "mapping",
+    "dataviz"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.6.0",
+    "iron-ajax": "PolymerElements/iron-ajax#^1.4.3",
+    "d3-bundle-element": "^1.6.0",
+    "iron-resizable-behavior": "^1.0.0",
+    "paper-input": "^1.0.0",
+    "paper-button": "^1.0.13"
+  },
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
+    "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^1.0.0",
+    "web-component-tester": "^4.0.0",
+    "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0"
+  },
+  "homepage": "https://github.com/PolymerEl/multi-chart",
+  "_release": "0.7.3",
+  "_resolution": {
+    "type": "version",
+    "tag": "v0.7.3",
+    "commit": "bed02117dd3b562f7b1bf05114c69228420330ac"
+  },
+  "_source": "https://github.com/PolymerEl/multi-chart.git",
+  "_target": "^0.7.3",
+  "_originalSource": "PolymerEl/multi-chart",
+  "_direct": true
+}

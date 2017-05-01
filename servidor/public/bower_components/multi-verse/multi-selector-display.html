@@ -1,0 +1,84 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../d3-bundle-element/d3-format-behavior.html">
+<!--
+`multi-selector-display` for displaying charts elements that have been selected
+
+
+@element multi-selector-display
+@demo demo/index.html
+-->
+<dom-module id="multi-selector-display">
+  <template>
+    <style>
+    :host {
+      display: inline;
+      /*position: relative;*/
+    }
+    
+    paper-icon-button {
+      padding: 0;
+      width: 18px;
+      height: 18px;
+      margin-left: 10px;
+    }
+    </style>
+    <template is="dom-if" if="[[_hasSelection]]">
+      <template is="dom-if" if="[[isRange]]">
+        <span>[[selected]] [[[_rangeFormat(selectedItems.*, 0, d3Format)]]-[[_rangeFormat(selectedItems.*, 1, d3Format)]]]</span>
+      </template>
+      <template is="dom-if" if="[[!isRange]]">
+        <span>[[selected]] [[_discreteSelection(selectedItems.*)]]</span>
+      </template>
+      <paper-icon-button on-tap="clear" class="filter-clear" icon="clear">
+    </template>
+  </template>
+  <script>
+  Polymer({
+    is: 'multi-selector-display',
+
+    behaviors: [
+      Polymer.behaviors.d3Format
+    ],
+
+    properties: {
+
+      selectedItems: {
+        type: Array
+      },
+
+      selected: {
+        type: String,
+        value: 'selected:'
+      },
+
+      isRange: {
+        type: Boolean,
+        value: false
+      },
+
+      _hasSelection: {
+        type: Boolean,
+        computed: '_computeHasSelection(selectedItems.length)'
+      }
+
+    },
+
+    clear: function() {
+      this.fire('multi-clear');
+    },
+
+    _computeHasSelection: function() {
+      return this.selectedItems && this.selectedItems.length;
+    },
+
+    _rangeFormat: function(items, index, format) {
+      return format(this.selectedItems[index]);
+    },
+
+    _discreteSelection: function(items) {
+      return this.selectedItems.join(', ');
+    }
+  });
+  </script>
+</dom-module>

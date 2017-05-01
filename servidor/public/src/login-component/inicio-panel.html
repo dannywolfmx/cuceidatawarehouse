@@ -1,0 +1,75 @@
+<link rel="import" href="../../bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="../../bower_components/paper-tabs/paper-tab.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/neon-animation/neon-animations.html">
+
+<link rel="import" href="./login-panel.html">
+<link rel="import" href="./registro-panel.html">
+
+<dom-module id="inicio-panel">
+    <style is="custom-style">
+         :host {
+            display: block;
+            margin: 0 auto;
+            max-width: 500px;
+        }
+        
+        #login-section {
+            display: block;
+            margin: 16px;
+            --paper-card-content: {
+                padding: 0;
+            }
+            --paper-card-header-text: {
+                font-weight: bold;
+                text-align: center;
+                color: white !important;
+            }
+            --paper-card-actions: {
+                padding: 0;
+            }
+        }
+    </style>
+
+    <template>
+
+        <paper-card id="login-section" image="" elevation="1" animated-shadow="false">
+            <div class="card-content">
+
+                <paper-tabs selected="{{loginPanel}}">
+                    <paper-tab>Iniciar</paper-tab>
+                    <paper-tab>Registrarse</paper-tab>
+                </paper-tabs>
+
+
+                <neon-animated-pages selected=[[loginPanel]] entry-animation="fade-in-animation" exit-animation="fade-out-animation">
+                    <login-panel usuario="{{usuario}}" token={{token}}></login-panel>
+                    <registro-panel usuario="{{usuario}}" token={{token}}></registro-panel>
+                </neon-animated-pages>
+
+            </div>
+        </paper-card>
+
+
+    </template>
+    <script>
+        Polymer({
+            is: "inicio-panel",
+            properties: {
+                usuario: {
+                    value: {},
+                    notify:true
+                },
+                loginPanel: {
+                    value: 0
+                },
+                token:{
+                    value:{},
+                    notify:true
+                }
+            },
+        })
+    </script>
+
+
+</dom-module>

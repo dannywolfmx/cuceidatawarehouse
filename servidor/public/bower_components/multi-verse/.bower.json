@@ -1,0 +1,55 @@
+{
+  "name": "multi-verse",
+  "version": "0.7.9",
+  "description": "polymer elements for multivariate analysis (depend on crossfilter, universe, reductio and multichart)",
+  "license": "MIT",
+  "authors": [
+    "christophe.geiser <christophe.geiser@e-smile.org>"
+  ],
+  "main": "multi-verse-import.html",
+  "repository": "https://github.com/polymerEl/multi-verse",
+  "keywords": [
+    "web-component",
+    "web-components",
+    "d3.js",
+    "charts",
+    "multivariate",
+    "dashboard",
+    "polymer",
+    "crossfilter",
+    "universe",
+    "analytics",
+    "mapping",
+    "dataviz"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.6.0",
+    "universe": "crossfilter/universe#^0.6.4",
+    "d3-bundle-element": "^1.7.0",
+    "multi-chart": "PolymerEl/multi-chart"
+  },
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
+    "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^1.0.0",
+    "web-component-tester": "^4.0.0",
+    "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0",
+    "iron-ajax": "PolymerElements/iron-ajax",
+    "paper-drawer-panel": "PolymerElements/paper-drawer-panel",
+    "paper-header-panel": "PolymerElements/paper-header-panel",
+    "paper-toolbar": "PolymerElements/paper-toolbar",
+    "paper-icon-button": "PolymerElements/paper-icon-button",
+    "paper-button": "PolymerElements/paper-button",
+    "paper-material": "PolymerElements/paper-material"
+  },
+  "homepage": "https://github.com/PolymerEl/multi-verse",
+  "_release": "0.7.9",
+  "_resolution": {
+    "type": "version",
+    "tag": "v0.7.9",
+    "commit": "115acd7c618591d50e5a07cc272301cc4f481273"
+  },
+  "_source": "https://github.com/PolymerEl/multi-verse.git",
+  "_target": "^0.7.9",
+  "_originalSource": "PolymerEl/multi-verse",
+  "_direct": true
+}

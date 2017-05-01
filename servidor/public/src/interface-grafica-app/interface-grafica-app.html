@@ -26,17 +26,25 @@
 <link rel="import" href="../../bower_components/neon-animation/neon-animatable-behavior.html">
 <link rel="import" href="../../bower_components/neon-animation/neon-shared-element-animatable-behavior.html">
 <link rel="import" href="../../bower_components/neon-animation/neon-animation-runner-behavior.html">
-<link rel="import" href="../../bower_components/neon-animation/animations/slide-from-right-animation.html">
-<link rel="import" href="../../bower_components/neon-animation/animations/slide-right-animation.html">
+<link rel="import" href="../../bower_components/multi-chart/multi-chart.html">
 
+
+<link rel="stylesheet" href="../../bower_components/multi-chart/multichart.css">
+
+  <link rel="import" href="../../bower_components/d3-bundle-element/d3-element-multi.html">
+  <link rel="import" href="../../bower_components/multi-chart/multi-legend.html">
+  <link rel="import" href="../../bower_components/multi-chart/multi-selector.html">
+  <link rel="import" href="../../bower_components/multi-chart/shape/multi-shape-line.html">
+  <link rel="import" href="../../bower_components/multi-chart/chart/multi-chart-coordinate.html">
+  <link rel="stylesheet" href="../../bower_components/multi-chart/multichart.css">
 
 
 <link rel="import" href="../../bower_components/neon-animation/animations/cascaded-animation.html">
 
 
 
-<link rel="import" href="../login-component/login-panel.html">
-<link rel="import" href="../login-component/registro-panel.html">
+<link rel="import" href="../login-component/inicio-panel.html">
+
 <link rel="import" href="../elemento-archivo/elemento-archivo.html">
 
 <dom-module id="interface-grafica-app">
@@ -44,18 +52,21 @@
 
     <style is="custom-style">
        :host {
-         margin:0;
+        margin: 0;
         display: block;
         width: 100%;
         height: 100%;
         box-sizing: border-box;
       }
       
+      #pieChart {
+        height: 400px;
+      }
+      
       paper-drawer-panel {
         --paper-drawer-panel-left-drawer-container: {
           background-color: #333333;
         }
-        ;
       }
       
       #lista-archivos {
@@ -84,14 +95,7 @@
         opacity: 0.7;
       }
       
-      login-panel,
-      registro-panel {
-        display: block;
-        margin: 0 auto;
-        max-width: 500px;
-      }
-      
-      #login-section {
+      #datos-section {
         display: block;
         margin: 16px;
         --paper-card-content: {
@@ -143,7 +147,7 @@
         }
       }
       
-      neon-animated-pages {
+      neon-animated-pages{
         position: absolute;
         width: 100%;
         height: 100%;
@@ -151,10 +155,11 @@
       }
     </style>
 
-
+    <!--guardamos los datos de la sesion en el navegador-->
     <iron-localstorage name="token" value="{{token}}"></iron-localstorage>
     <iron-localstorage name="usuario" value="{{usuario}}"></iron-localstorage>
 
+    <!--Llamadas al servidor para la interacción con los archivos-->
     <iron-ajax id="eliminararchivo" url="/eliminararchivo" method="POST" handle-as="json" on-response="actualizarArchivos"></iron-ajax>
     <iron-ajax id="seleccionararchivo" url="/damearchivo" method="POST" handle-as="json" on-response="muestraarchivo"></iron-ajax>
     <iron-ajax id="traducirjson" url="/traductorjson" method="POST" handle-as="json" on-response="agregatraduccion"></iron-ajax>
@@ -184,74 +189,74 @@
 
             </paper-toolbar>
 
+            <!--Seccion para subir archivos-->
             <vaadin-upload class="thick-border" i18n="[[i18n]]" on-upload-response="uploadresponse" on-upload-before="agregarheader"
               id="fileupdate" name="sampleFile" target="/archivo" method="POST"></vaadin-upload>
 
 
+            <paper-card id="datos-section" image="" elevation="1" animated-shadow="false">
+              <div class="card-content">
 
-            <!-- The array is set as the <vaadin-grid>'s "items" property -->
+                <paper-tabs selected="{{datosGraficas}}">
+                  <paper-tab on-tap="prueba">Archivos</paper-tab>
+                  <paper-tab>Tabla</paper-tab>
+                  <paper-tab>Grafica</paper-tab>
+                </paper-tabs>
 
-            <div>
+                <neon-animated-pages class="flex" selected=[[datosGraficas]] entry-animation="fade-in-animation" exit-animation="fade-out-animation">
 
-              <paper-card id="login-section" image="" elevation="1" animated-shadow="false">
-                <div class="card-content">
+                  <paper-card id="lista-archivos" image="" elevation="1" animated-shadow="false">
+                    <template is="dom-repeat" items="[[usuario.archivos]]">
+                      <paper-item class="direcciones">
+                        <elemento-archivo>
+                          <paper-icon-button icon="view-list" on-tap="seleccionaarchivo"></paper-icon-button>
+                          <paper-icon-button icon="delete" style="color: #E57373;" on-tap="eliminarArchivo"></paper-icon-button>
+                          [[editaNombreDireccion(item.direccion)]]
+                        </elemento-archivo>
+                      </paper-item>
+                    </template>
+                  </paper-card>
+                  <div>
 
-                  <paper-tabs selected="{{datosGraficas}}">
-                    <paper-tab on-tap="prueba">Archivos</paper-tab>
-                    <paper-tab>Tabla</paper-tab>
-                    <paper-tab>Grafica</paper-tab>
-                  </paper-tabs>
+                    <paper-icon-button icon="g-translate" style="color: blue;" on-tap="traducirArchivo"></paper-icon-button>
+                    <vaadin-grid aria-label="Basic Binding Example" items="[[datosTabla]]">
 
-                  <neon-animated-pages class="flex" selected=[[datosGraficas]] entry-animation="fade-in-animation" exit-animation="fade-out-animation">
+                      <vaadin-grid-column width="50px" flex-grow="0">
+                        <template class="header">#</template>
+                        <template>[[index]]</template>
+                        <!-- If necessary, the footer could be set using <template class="footer"> -->
+                      </vaadin-grid-column>
 
-                    <paper-card id="lista-archivos" image="" elevation="1" animated-shadow="false">
-                      <template is="dom-repeat" items="[[usuario.archivos]]" on-dom-change="_renderisarItems">
-                        <paper-item class="direcciones">
-                          <elemento-archivo>
-                            <paper-icon-button icon="view-list" on-tap="seleccionaarchivo"></paper-icon-button>
-                            <paper-icon-button icon="delete" style="color: #E57373;" on-tap="eliminarArchivo"></paper-icon-button>
-                            [[item.direccion]]
-                          </elemento-archivo>
-                        </paper-item>
-                      </template>
-                    </paper-card>
-                    <div>
-
-                      <paper-icon-button icon="g-translate" style="color: blue;" on-tap="traducirArchivo"></paper-icon-button>
-                      <vaadin-grid aria-label="Basic Binding Example" items="[[datosTabla]]">
-
-                        <vaadin-grid-column width="50px" flex-grow="0">
-                          <template class="header">#</template>
-                          <template>[[index]]</template>
-                          <!-- If necessary, the footer could be set using <template class="footer"> -->
+                      <template is="dom-repeat" items="[[columnas]]" as="columna">
+                        <vaadin-grid-column>
+                          <template class="header">[[columna]]</template>
+                          <template>[[get(columna,item)]]</template>
                         </vaadin-grid-column>
 
-
-
-                        <template is="dom-repeat" items="[[columnas]]" as="columna">
-
-
-                          <vaadin-grid-column>
-                            <template class="header">[[columna]]</template>
-
-                            <template>[[get(columna,item)]]</template>
-
-
-                          </vaadin-grid-column>
-
-                        </template>
-
-
-                      </vaadin-grid>
+                      </template>
+                    </vaadin-grid>
+                  </div>
+                  <neon-animatable>
+                    <div id="grafica">
+                      
+                      <multi-chart-coordinate id="chart" color-scale="{{colorScale}}" x-accessor-path="[[xAccessorPath]]" x-scale="{{xScale}}"
+                        x-accessor="{{xAccessor}}" y-accessor-path="[[yAccessorPath]]" y-scale="{{yScale}}" y-accessor="{{yAccessor}}">
+                        <multi-shape-line index="banana" height="[[height]]" x-accessor="[[xAccessor]]" y-accessor="[[yAccessor]]" x-scale="[[xScale]]"
+                          y-scale="[[yScale]]" color-scale="[[colorScale]]"></multi-shape-line>
+                        <h3 header>PRUEBA D3</h3>
+                        <multi-legend legend chart-width="0" scale="[[colorScale]]" position="top-right"></multi-legend>
+                        <multi-selector selection-type="brushX" width="[[width]]" height="[[height]]" x-scale="[[xScale]]" accessor="[[xAccessor]]"></multi-selector>
+                      </multi-chart-coordinate>
                     </div>
-                  </neon-animated-pages>
 
-                </div>
+                  </neon-animatable>
+                </neon-animated-pages>
 
-              </paper-card>
 
-            </div>
 
+              </div>
+
+            </paper-card>
 
           </paper-scroll-header-panel>
         </paper-drawer-panel>
@@ -260,31 +265,12 @@
 
       <neon-animatable>
 
+        <inicio-panel usuario="{{usuario}}" token="{{token}}"></inicio-panel>
 
-        <div>
-
-          <paper-card id="login-section" image="" elevation="1" animated-shadow="false">
-            <div class="card-content">
-
-              <paper-tabs selected="{{loginPanel}}">
-                <paper-tab>Iniciar</paper-tab>
-                <paper-tab>Registrarse</paper-tab>
-              </paper-tabs>
-
-              <neon-animated-pages selected=[[loginPanel]]>
-                <login-panel usuario="{{usuario}}" token={{token}}></login-panel>
-                <registro-panel usuario="{{usuario}}" token={{token}}></registro-panel>
-              </neon-animated-pages>
-
-            </div>
-
-          </paper-card>
-
-        </div>
 
       </neon-animatable>
     </neon-animated-pages>
-    <paper-toast id="toast" text=""></paper-toast>
+    <paper-toast id="toast"></paper-toast>
   </template>
 
   <script>
@@ -410,6 +396,42 @@
 
       },
       attached: function () {
+        ////////////
+
+        var chart = this.$.chart;
+        var data;
+
+        var keys = ['apple', 'banana', 'grape'];
+        var n = 10;
+
+        function rnd(size, keys, max) {
+          return d3.range(size).map(function (d, i) {
+            var value = {};
+            var r = d3.randomUniform(max);
+            keys.forEach(function (k) {
+              value[k] = r();
+            });
+            return { key: i, value: value }
+          });
+        }
+
+        var d1 = rnd(10, keys, 50);
+        var d2 = rnd(10, keys, 50);
+
+        var isD1 = false;
+
+        chart.colorDomain = ['banana'];
+        chart.xAccessorPath = 'key';
+        chart.yAccessorPath = '+value.banana';
+        chart.data = d1;
+
+        // app.innerRadius = 45;
+        // app.padAngle = 0.1;
+
+        /////////
+
+
+
 
         self = this
 
@@ -429,6 +451,8 @@
                 });*/
 
         this.playAnimation('entry');
+        this.$.toast.text = "Bienvenido";
+        this.$.toast.open();
       },
       registrado: function () {
         if ((this.token.length > 0)) {
@@ -456,8 +480,8 @@
         this.$.eliminararchivo.headers = {
           Authorization: "Bear " + this.token,
           idusuario: this.usuario._id,
-          idarchivo: idArchivo.model.__data__.item._id,
-          direccion: idArchivo.model.__data__.item.direccion
+          idarchivo: idArchivo.model.item._id,
+          direccion: idArchivo.model.item.direccion
         }
 
         this.$.eliminararchivo.generateRequest();
@@ -466,10 +490,10 @@
         this.set('usuario', e.detail.response.usuario)
       },
       seleccionaarchivo: function (idArchivo) {
-        let direccion = idArchivo.model.__data__.item.direccion;
+        let direccion = idArchivo.model.item.direccion;
         this.$.seleccionararchivo.headers = {
           Authorization: "Bear " + this.token,
-          direccion: idArchivo.model.__data__.item.direccion
+          direccion: idArchivo.model.item.direccion
         }
         this.$.seleccionararchivo.generateRequest();
         this.nombrearchivo = direccion;
@@ -509,6 +533,15 @@
         this.$.toast.text = "Traduccion lista"
 
         this.$.toast.open();
+      },
+      editaNombreDireccion:function(nombre){
+      /*-Separamos la cadena por cada "/" que tenga,
+        -Obtenemos el ultimo elemento de la lista
+        -Separamos la cadena por cada "." que tenga
+        -Obtenemos el primer elemento de la lista*/
+
+        return nombre.split("/").pop().split(".").shift()
+        
       }
     });
   </script>
