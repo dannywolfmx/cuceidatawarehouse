@@ -111,7 +111,7 @@ function eliminarArchivo(req, res) {
 function dameArchivo(req, res) {
     const file = require("fs");
     let direccion = req.headers.direccion;
-    console.log(direccion)
+    
     if (file.existsSync(direccion)) {
         res.status(200).send(
            file.readFileSync(direccion, "utf8")

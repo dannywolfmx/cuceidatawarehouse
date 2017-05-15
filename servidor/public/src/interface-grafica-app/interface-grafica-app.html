@@ -31,12 +31,12 @@
 
 <link rel="stylesheet" href="../../bower_components/multi-chart/multichart.css">
 
-  <link rel="import" href="../../bower_components/d3-bundle-element/d3-element-multi.html">
-  <link rel="import" href="../../bower_components/multi-chart/multi-legend.html">
-  <link rel="import" href="../../bower_components/multi-chart/multi-selector.html">
-  <link rel="import" href="../../bower_components/multi-chart/shape/multi-shape-line.html">
-  <link rel="import" href="../../bower_components/multi-chart/chart/multi-chart-coordinate.html">
-  <link rel="stylesheet" href="../../bower_components/multi-chart/multichart.css">
+<link rel="import" href="../../bower_components/d3-bundle-element/d3-element-multi.html">
+<link rel="import" href="../../bower_components/multi-chart/multi-legend.html">
+<link rel="import" href="../../bower_components/multi-chart/multi-selector.html">
+<link rel="import" href="../../bower_components/multi-chart/shape/multi-shape-line.html">
+<link rel="import" href="../../bower_components/multi-chart/chart/multi-chart-coordinate.html">
+<link rel="stylesheet" href="../../bower_components/multi-chart/multichart.css">
 
 
 <link rel="import" href="../../bower_components/neon-animation/animations/cascaded-animation.html">
@@ -58,17 +58,17 @@
         height: 100%;
         box-sizing: border-box;
       }
-      
+
       #pieChart {
         height: 400px;
       }
-      
+
       paper-drawer-panel {
         --paper-drawer-panel-left-drawer-container: {
           background-color: #333333;
         }
       }
-      
+
       #lista-archivos {
         background-color: #333333;
         display: block;
@@ -77,24 +77,24 @@
           color: white;
         }
       }
-      
+
       paper-menu {
         --paper-menu-background-color: {
           background-color: transparent;
         }
         --paper-menu: {}
       }
-      
+
       paper-item:hover {
         opacity: 1;
         background-color: #555555;
       }
-      
+
       paper-item {
         color: #fff;
         opacity: 0.7;
       }
-      
+
       #datos-section {
         display: block;
         margin: 16px;
@@ -111,7 +111,7 @@
           padding: 0;
         }
       }
-      
+
       vaadin-upload.thick-border {
         --primary-color: #396;
         --dark-primary-color: #063;
@@ -123,20 +123,20 @@
         background: #eee;
         border-radius: 0;
       }
-      
+
       vaadin-upload.thick-border[dragover] {
         border-color: #396;
       }
-      
+
       paper-toolbar {
         --paper-toolbar-background: #333333;
       }
-      
+
       .direcciones {
         padding: 16px;
         border-bottom: 3px solid #396;
       }
-      
+
       #lista-archivos {
         padding: 0;
         --paper-card-header: {}
@@ -146,8 +146,8 @@
           font-weight: bold;
         }
       }
-      
-      neon-animated-pages{
+
+      neon-animated-pages {
         position: absolute;
         width: 100%;
         height: 100%;
@@ -161,7 +161,7 @@
 
     <!--Llamadas al servidor para la interacción con los archivos-->
     <iron-ajax id="eliminararchivo" url="/eliminararchivo" method="POST" handle-as="json" on-response="actualizarArchivos"></iron-ajax>
-    <iron-ajax id="seleccionararchivo" url="/damearchivo" method="POST" handle-as="json" on-response="muestraarchivo"></iron-ajax>
+    <iron-ajax id="seleccionararchivo" url="/damearchivo" method="POST" handle-as="json" on-response="muestraarchivo" on-error="errorAlObtenerArchivo"></iron-ajax>
     <iron-ajax id="traducirjson" url="/traductorjson" method="POST" handle-as="json" on-response="agregatraduccion"></iron-ajax>
 
 
@@ -238,7 +238,7 @@
                   </div>
                   <neon-animatable>
                     <div id="grafica">
-                      
+
                       <multi-chart-coordinate id="chart" color-scale="{{colorScale}}" x-accessor-path="[[xAccessorPath]]" x-scale="{{xScale}}"
                         x-accessor="{{xAccessor}}" y-accessor-path="[[yAccessorPath]]" y-scale="{{yScale}}" y-accessor="{{yAccessor}}">
                         <multi-shape-line index="banana" height="[[height]]" x-accessor="[[xAccessor]]" y-accessor="[[yAccessor]]" x-scale="[[xScale]]"
@@ -499,11 +499,24 @@
         this.nombrearchivo = direccion;
       },
       muestraarchivo: function (e) {
+
+        this.$.toast.close();
+
+        this.$.toast.text = "Archivo listo"
+
+        this.$.toast.open();
         let contenido = e.detail.response
-        console.log(contenido[0])
+        //console.log(contenido[0])
         this.columnas = Object.keys(contenido[0]);
         this.datosTabla = contenido;
         this.datosGraficas = 1;
+      },
+      errorAlObtenerArchivo: function () {
+        this.$.toast.close();
+
+        this.$.toast.text = "El archivo aun no esta listo!!!"
+
+        this.$.toast.open()
       },
       traducirArchivo: function () {
         if (this.nombrearchivo === "") {
@@ -534,14 +547,14 @@
 
         this.$.toast.open();
       },
-      editaNombreDireccion:function(nombre){
-      /*-Separamos la cadena por cada "/" que tenga,
-        -Obtenemos el ultimo elemento de la lista
-        -Separamos la cadena por cada "." que tenga
-        -Obtenemos el primer elemento de la lista*/
+      editaNombreDireccion: function (nombre) {
+        /*-Separamos la cadena por cada "/" que tenga,
+          -Obtenemos el ultimo elemento de la lista
+          -Separamos la cadena por cada "." que tenga
+          -Obtenemos el primer elemento de la lista*/
 
         return nombre.split("/").pop().split(".").shift()
-        
+
       }
     });
   </script>

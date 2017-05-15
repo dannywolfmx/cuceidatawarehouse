@@ -88,14 +88,16 @@ function convertirPdf(nombreArchivo) {
     file.readFile(nombreArchivo, function (err, buffer) {
 
         if (err) return console.log(err);
-        result = extraerTablaJson(result)
+        
         pdf2table.parse(buffer, function (err, result, rowsdebug) {
             if (err) {
-                return console.log(err);
+                console.log("Error");
+                return 
             }
             file.writeFile(nombreArchivoFinal, JSON.stringify(result), (err) => {
                 if (err) {
-                    throw err;
+                    console.log("Error al leer")
+                    
                 } else {
                     file.unlink(nombreArchivo)
                 }
