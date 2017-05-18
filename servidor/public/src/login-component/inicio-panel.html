@@ -43,8 +43,8 @@
 
 
                 <neon-animated-pages selected=[[loginPanel]] entry-animation="fade-in-animation" exit-animation="fade-out-animation">
-                    <login-panel usuario="{{usuario}}" token={{token}}></login-panel>
-                    <registro-panel usuario="{{usuario}}" token={{token}}></registro-panel>
+                    <login-panel usuario="{{usuario}}" token="{{token}}"></login-panel>
+                    <registro-panel usuario="{{usuario}}" token="{{token}}"></registro-panel>
                 </neon-animated-pages>
 
             </div>
@@ -63,9 +63,9 @@
                 loginPanel: {
                     value: 0
                 },
-                token:{
-                    value:{},
-                    notify:true
+                token: {
+                    type: String,
+                    notify: true
                 }
             },
         })

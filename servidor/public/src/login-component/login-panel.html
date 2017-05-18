@@ -90,7 +90,6 @@
                 this.$.form.submit();
             },
             respuesta: function (e) {
-                console.log(e.detail.response)
                 this.set("usuario", e.detail.response.usuario);
                 this.set("token", e.detail.response.token);
             },

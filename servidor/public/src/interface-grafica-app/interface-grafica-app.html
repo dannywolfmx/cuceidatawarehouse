@@ -455,6 +455,7 @@
         this.$.toast.open();
       },
       registrado: function () {
+        console.log(this.usuario);
         if ((this.token.length > 0)) {
           this.set("uregistrado", 0);
         } else {
@@ -466,6 +467,7 @@
           Authorization: "Bear " + this.token,
           correousuario: this.usuario.correo
         }
+
       },
       uploadresponse: function (e) {
         let respuesta = JSON.parse(e.detail.xhr.response).usuario

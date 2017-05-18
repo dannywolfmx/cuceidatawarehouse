@@ -101,7 +101,7 @@
             properties: {
                 usuario: {
                     type: Object,
-                    notife: true
+                    notify: true
                 },
                 token: {
                     type: String,
@@ -109,7 +109,6 @@
                 }
             },
             enviar: function () {
-                console.log(this.$.form.serialize())
                 this.$.form.submit()
             },
             respuesta: function (e) {
