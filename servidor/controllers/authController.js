@@ -11,7 +11,7 @@ function signUp(req,res){
         password:req.body.password,
         rol:req.body.rol
     })
-    console.log(req.body.rol)
+    
 
     usuario.save((err)=>{
         if(err){
