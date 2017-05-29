@@ -22,6 +22,7 @@
     "pdf2json": "^1.1.7",
     "pdf2table": "0.0.1",
     "socket.io": "^1.7.3",
+    "xls-to-json": "^0.4.0",
     "xlsx-to-json": "^0.2.4",
     "xml2js": "^0.4.17"
   }
