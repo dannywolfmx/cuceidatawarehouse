@@ -1,0 +1,49 @@
+<link rel="import" href="../../bower_components/google-map/google-map.html">
+<link rel="import" href="../../bower_components/google-map/google-map-marker.html">
+
+
+<dom-module id="lista-paises">
+    <style>
+        google-map {
+            height: 300px;
+            width: 100%
+        }
+    </style>
+    <template>
+
+        <google-map fit-to-marker api-key="AIzaSyAz7WVLaUpzwteE0Js1RaqqhQaY6EGtD4s">
+            <google-map-marker latitude="37.78" longitude="-122.4" draggable="true"></google-map-marker>
+        </google-map>
+
+        <template id="dom-repeat" items="[[paises]]" as="pais">
+
+            <paper-card heading="[[pais.nombre]]" image="" elevation="1" animated-shadow="false">
+                <div class="card-content">
+
+                    <template id="dom-repeat" items="[[pais.archivos]]" as="archivo">
+                        <paper-item>archivo</paper-item>
+                    </template>
+
+                </div>
+                <div class="card-actions">
+
+                </div>
+            </paper-card>
+
+        </template>
+
+
+
+    </template>
+
+    <script>
+        Polymer({
+            is: "lista-paises",
+            property: {
+                paises: {
+                    value: []
+                }
+            }
+        })
+    </script>
+</dom-module>

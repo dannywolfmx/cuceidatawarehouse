@@ -1,0 +1,44 @@
+<dom-module id="lista-archivos">
+    <style>
+        #lista-archivos {
+            background-color: #333333;
+            display: block;
+            padding: 16px;
+            --paper-card-header-text: {
+                color: white;
+            }
+            padding: 0;
+            --paper-card-header: {}
+            --paper-card-header-text: {
+                color: #EEEEEE;
+                text-align: center;
+                font-weight: bold;
+            }
+        }
+
+        .direcciones{
+            color:white
+        }
+    </style>
+
+    <template>
+        <paper-card id="lista-archivos" image="" elevation="1" animated-shadow="false">
+            <template is="dom-repeat" items="[[archivos]]" as="archivo">
+                <paper-item class="direcciones">
+                        <paper-icon-button icon="view-list" on-tap="seleccionaarchivo"></paper-icon-button>
+                        <paper-icon-button icon="delete" style="color: #E57373;" on-tap="eliminarArchivo"></paper-icon-button>
+                        [[editaNombreDireccion(archivo.direccion)]]
+                </paper-item>
+            </template>
+        </paper-card>
+    </template>
+    <script>
+        Polymer({
+            is: "lista-archivos",
+            editaNombreDireccion: function (nombre) { return nombre.split("/").pop().split(".").shift() },
+            seleccionaarchivo: function (e) { this.fire('seleccionarArchivo', e.model.archivo.direccion); },
+            eliminarArchivo: function (e) { this.fire('eliminarArchivo', { direccion: e.model.archivo.direccion, _id: e.model.archivo._id }); }
+        })
+    </script>
+
+</dom-module>

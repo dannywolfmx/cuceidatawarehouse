@@ -1,0 +1,39 @@
+<link rel="import" href="./agregar-pais.html">
+<link rel="import" href="./lista-paises.html">
+
+<dom-module id="panel-mapa">
+
+    <template>
+        <paper-tabs attr-for-selected="name" selected="{{seleccion}}">
+            
+            <paper-tab name="lista">Lista</paper-tab>
+            <paper-tab name="agregar">Agregar</paper-tab>
+
+        </paper-tabs>
+
+        <neon-animated-pages attr-for-selected="name" class="flex" selected="[[seleccion]]" entry-animation="fade-in-animation"
+            exit-animation="fade-out-animation">
+
+            <neon-animatable name="lista">
+                <lista-paises></lista-paises>
+            </neon-animatable>
+            <neon-animatable name="agregar">
+                <agregar-pais></agregar-pais>
+            </neon-animatable>
+
+        </neon-animated-pages>
+
+    </template>
+
+    <script>
+        Polymer({
+            is: "panel-mapa",
+            property: {
+                seleccion: {
+                    value: "lista"
+                }
+            }
+        })
+    </script>
+
+</dom-module>

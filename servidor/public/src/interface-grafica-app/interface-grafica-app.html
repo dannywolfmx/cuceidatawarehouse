@@ -28,17 +28,6 @@
 <link rel="import" href="../../bower_components/neon-animation/neon-animation-runner-behavior.html">
 <link rel="import" href="../../bower_components/multi-chart/multi-chart.html">
 
-
-<link rel="stylesheet" href="../../bower_components/multi-chart/multichart.css">
-
-<link rel="import" href="../../bower_components/d3-bundle-element/d3-element-multi.html">
-<link rel="import" href="../../bower_components/multi-chart/multi-legend.html">
-<link rel="import" href="../../bower_components/multi-chart/multi-selector.html">
-<link rel="import" href="../../bower_components/multi-chart/shape/multi-shape-line.html">
-<link rel="import" href="../../bower_components/multi-chart/chart/multi-chart-coordinate.html">
-<link rel="stylesheet" href="../../bower_components/multi-chart/multichart.css">
-
-
 <link rel="import" href="../../bower_components/neon-animation/animations/cascaded-animation.html">
 
 
@@ -46,6 +35,12 @@
 <link rel="import" href="../login-component/inicio-panel.html">
 
 <link rel="import" href="../elemento-archivo/elemento-archivo.html">
+<link rel="import" href="../archivos/lista-archivos.html">
+<link rel="import" href="../archivos/tabla-archivo.html">
+<link rel="import" href="../archivos/grafica-archivo.html">
+
+<link rel="import" href="../mapa/panel-mapa.html">
+
 
 <dom-module id="interface-grafica-app">
   <template>
@@ -176,12 +171,14 @@
               <div class="title">[[usuario.rol]]</div>
 
             </paper-toolbar>
-            <paper-menu>
-              <paper-item>Subir archivos</paper-item>
+            <paper-menu attr-for-selected="name" selected="{{menuHerramientas}}">
+              <paper-item name="subir">Subir archivos</paper-item>
+              <paper-item name="mapa">Mapa</paper-item>
             </paper-menu>
 
           </paper-header-panel>
           <paper-scroll-header-panel main>
+
             <paper-toolbar>
               <paper-icon-button icon="menu" on-tap="menuAction"></paper-icon-button>
               <div class="title">Titulo</div>
@@ -189,74 +186,56 @@
 
             </paper-toolbar>
 
-            <!--Seccion para subir archivos-->
-            <vaadin-upload class="thick-border" i18n="[[i18n]]" on-upload-response="uploadresponse" on-upload-before="agregarheader"
-              id="fileupdate" name="sampleFile" target="/archivo" method="POST"></vaadin-upload>
+            <neon-animated-pages attr-for-selected="name" class="flex" selected=[[menuHerramientas]] entry-animation="fade-in-animation"
+              exit-animation="fade-out-animation">
+              <neon-animatable name="subir">
 
 
-            <paper-card id="datos-section" image="" elevation="1" animated-shadow="false">
-              <div class="card-content">
 
-                <paper-tabs selected="{{datosGraficas}}">
-                  <paper-tab on-tap="prueba">Archivos</paper-tab>
-                  <paper-tab>Tabla</paper-tab>
-                  <paper-tab>Grafica</paper-tab>
-                </paper-tabs>
+                <!--Seccion para subir archivos-->
+                <vaadin-upload class="thick-border" i18n="[[i18n]]" on-upload-response="uploadresponse" on-upload-before="agregarheader"
+                  id="fileupdate" name="sampleFile" target="/archivo" method="POST"></vaadin-upload>
 
-                <neon-animated-pages class="flex" selected=[[datosGraficas]] entry-animation="fade-in-animation" exit-animation="fade-out-animation">
 
-                  <paper-card id="lista-archivos" image="" elevation="1" animated-shadow="false">
-                    <template is="dom-repeat" items="[[usuario.archivos]]">
-                      <paper-item class="direcciones">
-                        <elemento-archivo>
-                          <paper-icon-button icon="view-list" on-tap="seleccionaarchivo"></paper-icon-button>
-                          <paper-icon-button icon="delete" style="color: #E57373;" on-tap="eliminarArchivo"></paper-icon-button>
-                          [[editaNombreDireccion(item.direccion)]]
-                        </elemento-archivo>
-                      </paper-item>
-                    </template>
-                  </paper-card>
-                  <div>
+                <paper-card id="datos-section" image="" elevation="1" animated-shadow="false">
+                  <div class="card-content">
 
-                    <paper-icon-button icon="g-translate" style="color: blue;" on-tap="traducirArchivo"></paper-icon-button>
-                    <vaadin-grid aria-label="Basic Binding Example" items="[[datosTabla]]">
+                    <paper-tabs selected="{{datosGraficas}}">
+                      <paper-tab on-tap="prueba">Archivos</paper-tab>
+                      <paper-tab>Tabla</paper-tab>
+                      <paper-tab on-click="actualizaGrafica">Grafica</paper-tab>
+                    </paper-tabs>
 
-                      <vaadin-grid-column width="50px" flex-grow="0">
-                        <template class="header">#</template>
-                        <template>[[index]]</template>
-                        <!-- If necessary, the footer could be set using <template class="footer"> -->
-                      </vaadin-grid-column>
+                    <neon-animated-pages class="flex" selected=[[datosGraficas]] entry-animation="fade-in-animation" exit-animation="fade-out-animation">
+                      <neon-animatable>
+                        <lista-archivos archivos={{usuario.archivos}}></lista-archivos>
+                      </neon-animatable>
 
-                      <template is="dom-repeat" items="[[columnas]]" as="columna">
-                        <vaadin-grid-column>
-                          <template class="header">[[columna]]</template>
-                          <template>[[get(columna,item)]]</template>
-                        </vaadin-grid-column>
+                      <neon-animatable>
 
-                      </template>
-                    </vaadin-grid>
+                        <tabla-archivo datos-tabla="{{datosTabla}}" principal='{{principal}}' columnas="[[columnas]]"></tabla-archivo>
+
+                      </neon-animatable>
+                      <neon-animatable>
+
+                        <grafica-archivo id="grafica" datos-tabla="[[datosTabla]]" column="[[columnas]]" principal='{{principal}}' ></grafica-archivo>
+
+                      </neon-animatable>
+                    </neon-animated-pages>
+
                   </div>
-                  <neon-animatable>
-                    <div id="grafica">
+                </paper-card>
+              </neon-animatable>
+              <neom-animatable name="mapa">
+                <panel-mapa></panel-mapa>
 
-                      <multi-chart-coordinate id="chart" color-scale="{{colorScale}}" x-accessor-path="[[xAccessorPath]]" x-scale="{{xScale}}"
-                        x-accessor="{{xAccessor}}" y-accessor-path="[[yAccessorPath]]" y-scale="{{yScale}}" y-accessor="{{yAccessor}}">
-                        <multi-shape-line index="banana" height="[[height]]" x-accessor="[[xAccessor]]" y-accessor="[[yAccessor]]" x-scale="[[xScale]]"
-                          y-scale="[[yScale]]" color-scale="[[colorScale]]"></multi-shape-line>
-                        <h3 header>PRUEBA D3</h3>
-                        <multi-legend legend chart-width="0" scale="[[colorScale]]" position="top-right"></multi-legend>
-                        <multi-selector selection-type="brushX" width="[[width]]" height="[[height]]" x-scale="[[xScale]]" accessor="[[xAccessor]]"></multi-selector>
-                      </multi-chart-coordinate>
-                    </div>
+              </neom-animatable>
 
-                  </neon-animatable>
-                </neon-animated-pages>
+              <neon-animatable name="grafica">
 
 
-
-              </div>
-
-            </paper-card>
+              </neon-animatable>
+            </neon-animated-pages>
 
           </paper-scroll-header-panel>
         </paper-drawer-panel>
@@ -269,6 +248,8 @@
 
 
       </neon-animatable>
+
+
     </neon-animated-pages>
     <paper-toast id="toast"></paper-toast>
   </template>
@@ -286,6 +267,7 @@
         Polymer.NeonAnimatableBehavior
       ],
       properties: {
+
         animationConfig: {
 
           value: function () {
@@ -324,6 +306,10 @@
           value: "",
           observer: "registrado"
         },
+        menuHerramientas:{
+          value:"subir"
+        }
+        ,
         uregistrado: {
           type: Number,
           value: 1
@@ -343,6 +329,10 @@
         nombrearchivo: {
           type: String,
           value: ""
+        },
+        principal:{
+          type:String,
+          notify:true
         },
         i18n: {
           type: Object,
@@ -392,46 +382,10 @@
 
       },
       ready: function () {
-
-
+        this.addEventListener('seleccionarArchivo', this.seleccionaarchivo);
+        this.addEventListener('eliminarArchivo', this.eliminarArchivo);
       },
       attached: function () {
-        ////////////
-
-        var chart = this.$.chart;
-        var data;
-
-        var keys = ['apple', 'banana', 'grape'];
-        var n = 10;
-
-        function rnd(size, keys, max) {
-          return d3.range(size).map(function (d, i) {
-            var value = {};
-            var r = d3.randomUniform(max);
-            keys.forEach(function (k) {
-              value[k] = r();
-            });
-            return { key: i, value: value }
-          });
-        }
-
-        var d1 = rnd(10, keys, 50);
-        var d2 = rnd(10, keys, 50);
-
-        var isD1 = false;
-
-        chart.colorDomain = ['banana'];
-        chart.xAccessorPath = 'key';
-        chart.yAccessorPath = '+value.banana';
-        chart.data = d1;
-
-        // app.innerRadius = 45;
-        // app.padAngle = 0.1;
-
-        /////////
-
-
-
 
         self = this
 
@@ -477,13 +431,12 @@
         this.set("usuario", "")
         this.set("token", "");
       },
-      eliminarArchivo: function (idArchivo) {
-        console.log(idArchivo);
+      eliminarArchivo: function (archivo) {
         this.$.eliminararchivo.headers = {
           Authorization: "Bear " + this.token,
           idusuario: this.usuario._id,
-          idarchivo: idArchivo.model.item._id,
-          direccion: idArchivo.model.item.direccion
+          idarchivo: archivo.detail._id,
+          direccion: archivo.detail.direccion
         }
 
         this.$.eliminararchivo.generateRequest();
@@ -491,15 +444,7 @@
       actualizarArchivos: function (e) {
         this.set('usuario', e.detail.response.usuario)
       },
-      seleccionaarchivo: function (idArchivo) {
-        let direccion = idArchivo.model.item.direccion;
-        this.$.seleccionararchivo.headers = {
-          Authorization: "Bear " + this.token,
-          direccion: idArchivo.model.item.direccion
-        }
-        this.$.seleccionararchivo.generateRequest();
-        this.nombrearchivo = direccion;
-      },
+
       muestraarchivo: function (e) {
 
         this.$.toast.close();
@@ -550,13 +495,19 @@
         this.$.toast.open();
       },
       editaNombreDireccion: function (nombre) {
-        /*-Separamos la cadena por cada "/" que tenga,
-          -Obtenemos el ultimo elemento de la lista
-          -Separamos la cadena por cada "." que tenga
-          -Obtenemos el primer elemento de la lista*/
-
         return nombre.split("/").pop().split(".").shift()
-
+      },
+      seleccionaarchivo: function (direccion) {
+        console.log(direccion.detail)
+        this.$.seleccionararchivo.headers = {
+          Authorization: "Bear " + this.token,
+          direccion: direccion.detail
+        }
+        this.$.seleccionararchivo.generateRequest();
+        this.nombrearchivo = direccion;
+      },
+      actualizaGrafica:function(){
+        this.$.grafica.actualiza()
       }
     });
   </script>

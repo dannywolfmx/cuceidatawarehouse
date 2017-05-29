@@ -33,21 +33,6 @@ function extraerTablaJson(datos) {
     }
 }
 
-function eliminaRegistrosVacio(datos) {
-    for (var a in datos) {
-
-        for (var i in datos[a]) {
-
-            var valor = datos[a][i]
-            if (valor === "") {
-                datos.splice(a,1);
-            }
-        }
-    }
-
-    return datos
-}
-
 
 function convertirXML(nombreArchivo) {
     const file = require("fs");
@@ -59,7 +44,7 @@ function convertirXML(nombreArchivo) {
 
         parser.parseString(buffer, (err, result) => {
             
-            result = eliminaRegistrosVacio(extraerTablaJson(result))
+            result = extraerTablaJson(result)
 
             file.writeFile(nombreArchivoFinal, JSON.stringify(result), (err) => {
                 if (err) {
@@ -85,7 +70,7 @@ function convertirCSV(nombreArchivo) {
         result.push(jsonObj)
 
     }).on('done', () => {
-        result = eliminaRegistrosVacio(extraerTablaJson(result))
+        result = extraerTablaJson(result)
         file.writeFile(nombreArchivoFinal, JSON.stringify(result), (err) => {
             if (err) {
                 console.log(err);
@@ -110,7 +95,6 @@ function convertirPdf(nombreArchivo) {
                 console.log("Error");
                 return
             }
-            result = eliminaRegistrosVacio(result);
             file.writeFile(nombreArchivoFinal, JSON.stringify(result), (err) => {
                 if (err) {
                     console.log("Error al leer")
@@ -139,7 +123,8 @@ function convertirXls(nombreArchivo) {
         if (err) {
             console.error(err);
         } else {
-            result = eliminaRegistrosVacio(extraerTablaJson(result));
+            
+            result = extraerTablaJson(result);
             
             file.writeFile(nombreArchivoFinal, JSON.stringify(result), (err) => {
                 if (err) {
@@ -170,7 +155,8 @@ function convertirXLSX(nombreArchivo) {
         if (err) {
             console.error(err);
         } else {
-            result = eliminaRegistrosVacio(extraerTablaJson(result));
+            console.log(result);
+            result = extraerTablaJson(result);
             
             file.writeFile(nombreArchivoFinal, JSON.stringify(result), (err) => {
                 if (err) {

@@ -1,0 +1,115 @@
+<link rel="import" href="../../bower_components/google-chart/google-chart.html">
+
+
+
+<dom-module id="grafica-archivo">
+    <template>
+        <style>
+            google-chart {
+                height: 300px;
+                width: 50em;
+            }
+        </style>
+
+        <paper-button on-click="actualiza"></paper-button>
+
+        <paper-card heading="Selecciona una grafica" image="" elevation="1" animated-shadow="false">
+            <div class="card-content">
+
+                <paper-menu attr-for-selected="name" selected="{{tipo}}">
+                    <paper-item name="area">Area</paper-item>
+                    <paper-item name="column">Columna</paper-item>
+                    <paper-item name="line">Linea</paper-item>
+                    <paper-item name="md-line">Md lineas</paper-item>
+                    <paper-item name="pie">Pie/Pastel</paper-item>
+                    <paper-item name="table">Tabla</paper-item>
+                </paper-menu>
+
+            </div>
+            <div class="card-actions">
+
+            </div>
+        </paper-card>
+
+        <google-chart id="chart" type='[[tipo]]' rows="{{filas}}" cols="{{columnas}}" options='{"title": "Distribution of days in 2001Q1"}'>
+        </google-chart>
+
+
+
+
+    </template>
+
+
+    <script>
+        Polymer({
+            is: "grafica-archivo",
+            properties: {
+                tipo: {
+                    value: "line"
+                },
+                filas: {
+                    value: []
+                },
+                columnas: {
+                    value: []
+                }
+            },
+            ready: function () {
+                this.$.chart.cols = [];
+                this.$.chart.rows = [];
+
+            },
+            actualiza: function () {
+
+                let column = this.column
+                let index = column.indexOf(this.principal);
+                if (index > -1) {
+                    column.splice(index, 1);
+                    column.unshift(this.principal);
+                }
+
+
+                let datos = JSON.parse(JSON.stringify(this.datosTabla, column))
+
+                let keys = Object.keys(datos[0]);
+                let columnas = []
+                let filas = []
+                for (var i in keys) {
+                    columnas[i] = {}
+                    columnas[i].label = keys[i]
+                    let tipo = "number"
+                    if (isNaN(datos[0][keys[i]])) {
+                        tipo = "string";
+                    }
+                    columnas[i].type = tipo
+                }
+
+                columnas[0].type = "string"
+                this.set("columnas", columnas)
+
+
+                for (var i in datos) {
+                    filas[i] = Object.values(datos[i])
+                    for (var s in filas[i]) {
+
+                        if (s == 0) {
+                            filas[i][s] = filas[i][s].toString();
+                        } else {
+                            if (!isNaN(filas[i][s])) {
+                                filas[i][s] = Number(filas[i][s])
+                            }
+                        }
+                    }
+                }
+
+                this.set("filas", filas)
+
+
+
+            }
+
+
+        })
+    </script>
+
+</dom-module>

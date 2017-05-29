@@ -1,0 +1,188 @@
+<dom-module id="tabla-archivo">
+    <style is="custom-style" include="iron-flex iron-flex-alignment">
+        paper-card {
+            width: 100%;
+            height: 100%;
+            margin: 16px;
+            vertical-align: top;
+        }
+
+        #columnas,
+        #herramientas {
+            background: #333333;
+        }
+
+        #eliminarcampo {
+            background: #396;
+            width: 100%;
+            margin: 0;
+        }
+
+        #columnaprincipal {
+            width: 100%;
+            background: white;
+        }
+
+        .traducir {
+            width: 100%;
+            background: white;
+            margin: 0;
+        }
+
+        .valorpredeterminado {
+            padding: 10px;
+        }
+    </style>
+    <template>
+
+        <div class="horizontal layout center wrap flex">
+
+            <paper-card id="columnas" class="flex" heading="Eliminar columnas" image="" elevation="1" animated-shadow="false">
+                <div class="card-content">
+                    <paper-listbox class="dropdown-content" attr-for-selected="name" selected="{{principal}}">
+
+                        <template is="dom-repeat" items="[[columnas]]">
+                            <paper-item name="[[item]]">
+                                <div>
+                                    <paper-icon-button icon="delete" style="color: #E57373;" on-tap="eliminarColumna"></paper-icon-button>
+                                    [[item]]
+
+                                </div>
+                            </paper-item>
+                        </template>
+
+                    </paper-listbox>
+                </div>
+
+                <div class="card-actions">
+                    <paper-button id="eliminarcampo" on-click="eliminaCamposVacios" raised>Eliminar campos vacios</paper-button>
+
+
+                </div>
+            </paper-card>
+
+
+            <paper-card id="herramientas" class="flex" heading="Columna principal" elevation="1" animated-shadow="false">
+                <div class="card-content">
+
+                    <paper-listbox class="dropdown-content" attr-for-selected="name" selected="{{principal}}">
+
+                        <template is="dom-repeat" items="[[columnas]]">
+                            <paper-item name="[[item]]">[[item]]</paper-item>
+                        </template>
+
+                    </paper-listbox>
+
+                </div>
+
+                <div class="card-actions">
+                    <paper-button class="traducir" on-tap="traducirArchivo" raised>Traducir tabla</paper-button>
+
+                </div>
+            </paper-card>
+
+            <paper-card id="valor" class="flex" heading="Opciones columna" elevation="1" animated-shadow="false">
+                <div class="card-content valorpredeterminado">
+
+                    <paper-listbox class="dropdown-content" attr-for-selected="name" selected="{{principal}}">
+
+                        <template is="dom-repeat" items="[[columnas]]">
+                            <paper-input id="[[item]]" label="[[item]]"></paper-input>
+                        </template>
+
+                    </paper-listbox>
+
+                </div>
+
+                <div class="card-actions">
+                    <paper-button class="traducir" on-tap="cambiarCamposVacios" raised>Cambiar vacios</paper-button>
+
+                </div>
+            </paper-card>
+
+        </div>
+
+
+        <vaadin-grid aria-label="Basic Binding Example" items="{{datosTabla}}">
+
+            <vaadin-grid-column width="50px" flex-grow="0">
+                <template class="header">#</template>
+                <template>
+                    {{index}}
+                </template>
+                <!-- If necessary, the footer could be set using <template class="footer"> -->
+            </vaadin-grid-column>
+
+            <template is="dom-repeat" items="{{columnas}}" as="columna" index-as="b">
+                <vaadin-grid-column>
+                    <template class="header">[[columna]]</template>
+                    <template>
+                        <paper-input label="{{get(columna,item)}}" on-value-changed="bla"></paper-input>
+                    </template>
+                </vaadin-grid-column>
+
+            </template>
+
+
+        </vaadin-grid>
+    </template>
+
+    <script>
+        Polymer({
+            is: "tabla-archivo",
+            properties: {
+                columnas: {
+                    value: []
+                },
+                principal: {
+                    type: String,
+                    notify: true
+                },
+            },
+            guardar: function () {
+                console.log(this.principal)
+                console.log(this.datosTabla)
+            },
+            eliminaCamposVacios: function () {
+                this.datosTabla
+                for (var i in this.datosTabla) {
+                    for (var s in this.datosTabla[i]) {
+                        if (this.datosTabla[i][s] === "") {
+                            this.splice("datosTabla", i, 1);
+                            break;
+                        }
+                    }
+                }
+            },
+            eliminarColumna: function (e) {
+                var a = this.datosTabla;
+                for (var i in a) {
+                    delete a[i][e.model.item]
+                }
+                this.set("datosTabla", a)
+                this.set("columnas", Object.keys(this.datosTabla[0]));
+
+            },
+            cambiarCamposVacios: function () {
+                let valores = [];
+                for (var i in this.columnas) {
+                    valores[this.columnas[i]] = this.$$("#" + this.columnas[i]).value 
+                }
+                console.log(valores)
+                let datos = this.datosTabla
+
+                for (var i in datos) {
+                    for (var s in datos[i]) {
+                        if (datos[i][s] === "") {
+                            datos[i][s] = valores[s];
+                        }
+                    }
+                }
+
+                this.set("datosTabla",datos);
+                
+                console.log(this.datosTabla)
+            }
+        })
+    </script>
+</dom-module>
