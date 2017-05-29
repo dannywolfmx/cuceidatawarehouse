@@ -9,7 +9,7 @@ const fs = require("fs")
 const TIPOS_ARCHIVOS = fileToJson.TIPOS_ARCHIVOS;
 
 function guardarArchivo(req, res) {
-    if (!req.files) {
+    if (!req.file) {
         return res.status(400).send("No se encontro archivo para subir");
     }
     let archivo = req.files.file;

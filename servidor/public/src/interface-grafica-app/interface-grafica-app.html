@@ -172,16 +172,23 @@
 
             </paper-toolbar>
             <paper-menu attr-for-selected="name" selected="{{menuHerramientas}}">
-              <paper-item name="subir">Subir archivos</paper-item>
-              <paper-item name="mapa">Mapa</paper-item>
+              <template is="dom-if" if="[[administrador]]">
+                <paper-item name="subir">Subir archivos</paper-item>
+                <paper-item name="mapa">Mapa</paper-item>
+              </template>
+              <template is="dom-if" if="[[!administrador]]">
+                <paper-item name="vergraficas">Ver graficas</paper-item>
+              </template>
             </paper-menu>
+
+
 
           </paper-header-panel>
           <paper-scroll-header-panel main>
 
             <paper-toolbar>
               <paper-icon-button icon="menu" on-tap="menuAction"></paper-icon-button>
-              <div class="title">Titulo</div>
+              <div class="title">Equipo 2 Miercoles y viernes 11:00</div>
               <paper-icon-button icon="exit-to-app" on-tap="cerrarSecion"></paper-icon-button>
 
             </paper-toolbar>
@@ -218,7 +225,8 @@
                       </neon-animatable>
                       <neon-animatable>
 
-                        <grafica-archivo id="grafica" datos-tabla="[[datosTabla]]" column="[[columnas]]" principal='{{principal}}' ></grafica-archivo>
+                        <grafica-archivo id="grafica" token="[[token]]" usuario="[[usuario]]" datos-tabla="[[datosTabla]]" column="[[columnas]]"
+                          principal='{{principal}}' admin="true"></grafica-archivo>
 
                       </neon-animatable>
                     </neon-animated-pages>
@@ -231,10 +239,11 @@
 
               </neom-animatable>
 
-              <neon-animatable name="grafica">
+              <neom-animatable name="vergraficas">
+                <grafica-archivo id="grafica" token="[[token]]" usuario="[[usuario]]" datos-tabla="[[datosTabla]]" column="[[columnas]]"
+                  principal='{{principal}}' admin="false" ></grafica-archivo>
 
-
-              </neon-animatable>
+              </neom-animatable>
             </neon-animated-pages>
 
           </paper-scroll-header-panel>
@@ -300,14 +309,21 @@
           type: Number,
           value: 0
         },
-        usuario: Object,
+        usuario: {
+          type: Object,
+          value: {},
+          observer: "rol"
+        },
         token: {
           type: String,
           value: "",
           observer: "registrado"
         },
-        menuHerramientas:{
-          value:"subir"
+        administrador: {
+          value: false
+        },
+        menuHerramientas: {
+          value: ""
         }
         ,
         uregistrado: {
@@ -330,9 +346,9 @@
           type: String,
           value: ""
         },
-        principal:{
-          type:String,
-          notify:true
+        principal: {
+          type: String,
+          notify: true
         },
         i18n: {
           type: Object,
@@ -409,9 +425,9 @@
         this.$.toast.open();
       },
       registrado: function () {
-        console.log(this.usuario);
         if ((this.token.length > 0)) {
           this.set("uregistrado", 0);
+
         } else {
           this.set("uregistrado", 1);
         }
@@ -506,8 +522,20 @@
         this.$.seleccionararchivo.generateRequest();
         this.nombrearchivo = direccion;
       },
-      actualizaGrafica:function(){
+      actualizaGrafica: function () {
         this.$.grafica.actualiza()
+      }, rol: function () {
+        let admin
+
+        if ( (this.usuario.rol === "Administrador")) {
+          this.set("administrador", true)
+          this.menuHerramientas = "subir"
+
+        } else {
+          this.set("administrador", false)
+          this.menuHerramientas = "vergraficas"
+          this.$.grafica.actualiza()
+        }
       }
     });
   </script>

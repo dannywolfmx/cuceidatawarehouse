@@ -1,4 +1,5 @@
 <link rel="import" href="../../bower_components/google-chart/google-chart.html">
+<link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
 
 
 
@@ -9,12 +10,22 @@
                 height: 300px;
                 width: 50em;
             }
-            paper-card{
+
+            paper-card {
                 width: 100%;
+            }
+
+            form[hidden] {
+                display: none !important;
             }
         </style>
 
-        <paper-button on-click="actualiza"></paper-button>
+
+        <iron-ajax id="damegrafica" url="/damegrafica" method="POST" handle-as="json" on-response="damegrafica"></iron-ajax>
+
+        <form is="iron-form" on-iron-form-error="error" on-iron-form-response="agregalista" id="listagraficas" method="post" action="/damegraficas">
+        </form>
+
 
         <paper-card heading="Selecciona una grafica" image="" elevation="1" animated-shadow="false">
             <div class="card-content">
@@ -37,6 +48,26 @@
         <google-chart id="chart" type='[[tipo]]' rows="{{filas}}" cols="{{columnas}}" options='{"title": "Distribution of days in 2001Q1"}'>
         </google-chart>
 
+        <paper-card heading="Lista graficas" image="" elevation="1" animated-shadow="false">
+            <div class="card-content">
+
+                <template is="dom-repeat" items="[[listaGraficas]]">
+                    <paper-item on-click="seleccionarGrafica">[[item]]</paper-item>
+                </template>
+            </div>
+        </paper-card>
+
+        
+
+        <form is="iron-form" on-iron-form-error="error" on-iron-form-response="respuesta" id="form" method="post"
+            action="/guardargrafica">
+
+            <paper-input name="nombre" id="nombrearchivo" label="Nombre grafica"></paper-input>
+
+            <paper-button on-click="guardarGrafica" raised>Guardar grafica</paper-button>
+            <paper-textarea name="file" id="file" label="Datos grafica"></paper-textarea>
+
+        </form>
 
 
 
@@ -55,6 +86,15 @@
                 },
                 columnas: {
                     value: []
+                },
+                listaGraficas: {
+                    value: [],
+                },
+                datosTabla: {
+                    value: []
+                },
+                admin:{
+                    value:true
                 }
             },
             ready: function () {
@@ -64,54 +104,104 @@
             },
             actualiza: function () {
 
-                let column = this.column
-                let index = column.indexOf(this.principal);
-                if (index > -1) {
-                    column.splice(index, 1);
-                    column.unshift(this.principal);
-                }
-
-
-                let datos = JSON.parse(JSON.stringify(this.datosTabla, column))
-
-                let keys = Object.keys(datos[0]);
-                let columnas = []
-                let filas = []
-                for (var i in keys) {
-                    columnas[i] = {}
-                    columnas[i].label = keys[i]
-                    let tipo = "number"
-                    if (isNaN(datos[0][keys[i]])) {
-                        tipo = "string";
+                if (this.datosTabla.length > 0) {
+                    this.$.file.value = JSON.stringify(this.datosTabla)
+                    let column = this.column
+                    let index = column.indexOf(this.principal);
+                    if (index > -1) {
+                        column.splice(index, 1);
+                        column.unshift(this.principal);
                     }
-                    columnas[i].type = tipo
-                }
-
-                columnas[0].type = "string"
-                this.set("columnas", columnas)
 
 
-                for (var i in datos) {
-                    filas[i] = Object.values(datos[i])
-                    for (var s in filas[i]) {
 
-                        if (s == 0) {
-                            filas[i][s] = filas[i][s].toString();
-                        } else {
-                            if (!isNaN(filas[i][s])) {
-                                filas[i][s] = Number(filas[i][s])
+                    let datos = JSON.parse(JSON.stringify(this.datosTabla, column))
+
+                    this.$.file.value = JSON.stringify(datos)
+
+                    let keys = Object.keys(datos[0]);
+                    let columnas = []
+                    let filas = []
+                    for (var i in keys) {
+                        columnas[i] = {}
+                        columnas[i].label = keys[i]
+                        let tipo = "number"
+                        if (isNaN(datos[0][keys[i]])) {
+                            tipo = "string";
+                        }
+                        columnas[i].type = tipo
+                    }
+
+                    columnas[0].type = "string"
+                    this.set("columnas", columnas)
+
+
+                    for (var i in datos) {
+                        filas[i] = Object.values(datos[i])
+                        for (var s in filas[i]) {
+
+                            if (s == 0) {
+                                filas[i][s] = filas[i][s].toString();
+                            } else {
+                                if (!isNaN(filas[i][s])) {
+                                    filas[i][s] = Number(filas[i][s])
+                                }
                             }
                         }
                     }
+
+                    this.set("filas", filas)
                 }
 
-                this.set("filas", filas)
+                if (this.usuario.correo) {
+
+                    this.$.listagraficas.headers = {
+                        Authorization: "Bear " + this.token,
+                        correousuario: this.usuario.correo
+                    }
+
+                    this.$.listagraficas.submit()
+                }
+
+            },
+            guardarGrafica: function () {
 
 
+                this.$.form.headers = {
+                    Authorization: "Bear " + this.token,
+                    correousuario: this.usuario.correo
+                }
+                this.$.form.submit();
+            },
+            respuesta: function (e) {
+                console.log("Todo ok")
+            },
+            error: function (e) {
+                console.log("Error")
+            },
+            agregalista: function (e) {
+                this.set("listaGraficas", e.detail.response.archivos)
+            },
+            damegrafica: function (e) {
 
+                this.set("datosTabla", e.detail.response)
+
+                this.set("column", Object.keys(this.datosTabla[0]))
+                this.actualiza();
+            },
+            seleccionarGrafica: function (e) {
+
+                this.$.damegrafica.headers = {
+                    Authorization: "Bear " + this.token,
+                    correousuario: this.usuario.correo,
+                    direccion: e.model.item
+                }
+                this.$.damegrafica.generateRequest();
+            },
+            administrador:function(){
+                console.log(this.admin)
+                return !this.admin
             }
-
-
         })
     </script>
 
