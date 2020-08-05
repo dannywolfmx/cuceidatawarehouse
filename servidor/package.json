@@ -14,7 +14,7 @@
     "body-parser": "^1.17.1",
     "csvtojson": "^1.1.4",
     "express": "^4.15.2",
-    "express-fileupload": "^0.1.2",
+    "express-fileupload": "^1.1.9",
     "google-translate-api": "^2.2.2",
     "jwt-simple": "^0.5.1",
     "moment": "^2.18.1",
